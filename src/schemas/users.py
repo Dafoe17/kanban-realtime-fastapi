@@ -13,8 +13,9 @@ PASSWORD_REGEX = {
 class UserBase(BaseModel):
     username: str
     email: EmailStr
-    role: UserRole
-    date_joined: datetime
+    created_at: datetime
+    updated_at: datetime
+
 
 class UserRead(UserBase):
     id: int = Field(gt=0)

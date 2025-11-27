@@ -15,7 +15,7 @@ async def token_json(
     user = AuthService.login(db, form_data.username, form_data.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    access_token, _ = AuthService.create_tokens(user.username, user.role)
+    access_token, _ = AuthService.create_tokens(user.username)
     return {"access_token": access_token, "token_type": "bearer"}
 
 # For cookies
@@ -31,7 +31,7 @@ async def login(
     if not user:
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    access_token, refresh_token = AuthService.create_tokens(user.username, user.role)
+    access_token, refresh_token = AuthService.create_tokens(user.username)
 
     response.set_cookie(
         key="refresh_token", 

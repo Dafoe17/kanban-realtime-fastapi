@@ -35,15 +35,13 @@ class AuthService:
         return new_access
     
     @staticmethod
-    def create_tokens(username: str, role: str):
+    def create_tokens(username: str):
         access_token = create_access_token({
-            "sub": username,
-            "role": role
+            "sub": username
         })
 
         refresh_token = create_refresh_token({
-            "sub": username,
-            "role": role
+            "sub": username
         })
         
         return access_token, refresh_token
