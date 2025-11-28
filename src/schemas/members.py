@@ -1,24 +1,24 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-from typing import Optional, Union, List
+from pydantic import BaseModel, ConfigDict, Field, field_validator, PastDatetime
+from typing import Optional
 from src.enums import UserRole
-from datetime import datetime
+from uuid import UUID
 
 class MemberBase(BaseModel):
-    board_id: int = Field(gt=0)
-    user_id: int = Field(gt=0)
+    board_id: UUID
+    user_id: UUID
     role: UserRole
-    added_at: datetime
 
 class MemberRead(MemberBase):
-    id: int = Field(gt=0)
+    id: UUID
+    added_at: PastDatetime
     model_config = ConfigDict(from_attributes=True)
 
 class MemberCreate(MemberBase):
     pass
 
-class BoardUpdate(MemberBase):
+class MemberUpdate(MemberBase):
     pass
 
-class BoardStatusResponse(BaseModel):
+class MemberStatusResponse(BaseModel):
     status: str 
-    board: Optional[MemberRead] = None
+    member: Optional[MemberRead] = None

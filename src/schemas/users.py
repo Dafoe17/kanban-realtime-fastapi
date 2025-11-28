@@ -1,8 +1,7 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator, EmailStr
+from pydantic import BaseModel, ConfigDict, Field, field_validator, EmailStr, PastDatetime
 from typing import Optional, List
+from uuid import UUID
 import re
-from src.enums import UserRole
-from datetime import datetime
 
 PASSWORD_REGEX = {
     "letter": r"[a-zA-Z]",
@@ -13,12 +12,11 @@ PASSWORD_REGEX = {
 class UserBase(BaseModel):
     username: str
     email: EmailStr
-    created_at: Optional[datetime] = None
-    updated_at: Optional[datetime] = None
 
 class UserRead(UserBase):
-    id: int = Field(gt=0)
-
+    id: UUID
+    created_at: Optional[PastDatetime] = None
+    updated_at: Optional[PastDatetime] = None
     model_config = ConfigDict(from_attributes=True)
 
 class UserCreate(UserBase):

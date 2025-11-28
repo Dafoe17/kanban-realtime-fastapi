@@ -1,11 +1,12 @@
 from sqlalchemy.orm import Session
 from src.models import User, Member
 from src.enums import UserRole
+from uuid import UUID
 
 class UsersRepository:
 
     @staticmethod
-    def get_by_id(db: Session, id: int) -> User | None:
+    def get_by_id(db: Session, id: UUID) -> User | None:
         return db.query(User).filter(User.id == id).first()
 
     @staticmethod
@@ -41,7 +42,7 @@ class UsersRepository:
         return query.count()
 
     @staticmethod
-    def get_user_role_in_board(db: Session, user_id: int, board_id: int) -> UserRole | None:
+    def get_user_role_in_board(db: Session, user_id: UUID, board_id: UUID) -> UserRole | None:
         row = db.query(Member.role).filter_by(user_id=user_id,board_id=board_id).first()
         return row[0] if row else None
     

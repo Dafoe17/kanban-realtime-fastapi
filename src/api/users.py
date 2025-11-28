@@ -5,6 +5,7 @@ from src.services import UsersService
 from src.enums import SortOrder
 from src.models import User
 from src.schemas import UserUpdate, UserRead, UsersListResponse
+from uuid import UUID
 
 router = APIRouter(prefix="/users", tags=['Users'])
 
@@ -14,7 +15,7 @@ async def get_my_info(current_user: User = Depends(get_current_user)) -> UserRea
 
 @router.get("/get/{id}", response_model=UserRead, operation_id="get-user")
 async def get_user(
-    id: int,
+    id: UUID,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
     ):

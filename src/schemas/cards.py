@@ -1,18 +1,18 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, PastDatetime
 from typing import Optional, Union, List
-import re
-from src.enums import *
+from uuid import UUID
 
 class CardBase(BaseModel):
-    column_id: int = Field(gt=0)
+    column_id: UUID
     title: str
     description: str
     position: str
-    assigned_to: Optional[int] = Field(default=None, ge=0)
-    
+    assigned_to: Optional[UUID] = Field(default=None)
 
 class CardRead(CardBase):
-    id: int = Field(gt=0)
+    id: UUID
+    created_at: Optional[PastDatetime] = None
+    updated_at: Optional[PastDatetime] = None
     model_config = ConfigDict(from_attributes=True)
 
 class CardCreate(CardBase):

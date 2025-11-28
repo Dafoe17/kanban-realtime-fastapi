@@ -7,6 +7,7 @@ from src.core.security import (
     verify_refresh_token,
     hash_password
 )
+import uuid
 
 class AuthService:
 
@@ -51,20 +52,20 @@ class AuthService:
             raise HTTPException(status_code=401, detail="Refresh token expired")
     
         user_id = payload.get("sub")
-        new_access = create_access_token({"sub": user_id})
+        new_access = create_access_token({"sub": str(user_id)})
         if not new_access:
             raise HTTPException(status_code=401, detail="Refresh token expired")
 
         return new_access
     
     @staticmethod
-    def create_tokens(email: str):
+    def create_tokens(id: uuid.UUID):
         access_token = create_access_token({
-            "sub": email
+            "sub": str(id)
         })
 
         refresh_token = create_refresh_token({
-            "sub": email
+            "sub": str(id)
         })
         
         return access_token, refresh_token

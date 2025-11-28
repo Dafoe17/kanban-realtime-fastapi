@@ -1,16 +1,16 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator
-from typing import Optional, Union, List
-import re
-from src.enums import *
-from datetime import datetime
+from pydantic import BaseModel, ConfigDict, Field, field_validator, PastDatetime
+from typing import Optional
+from uuid import UUID
 
 class ColumnBase(BaseModel):
     title: str
     position: int
-    board_id: int = Field(gt=0)
+    board_id: UUID
 
 class ColumnRead(ColumnBase):
-    id: int = Field(gt=0)
+    id: UUID
+    created_at: Optional[PastDatetime] = None
+    updated_at: Optional[PastDatetime] = None
     model_config = ConfigDict(from_attributes=True)
 
 class ColumnCreate(ColumnBase):

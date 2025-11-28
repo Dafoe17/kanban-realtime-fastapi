@@ -15,7 +15,7 @@ async def token_json(
     ):
 
     user = AuthService.login(db, form_data.username, form_data.password)
-    access_token, _ = AuthService.create_tokens(user.email)
+    access_token, _ = AuthService.create_tokens(user.id)
     return {"access_token": access_token, "token_type": "bearer"}
 
 # For cookies
@@ -28,7 +28,7 @@ async def login(
     ):
 
     user = AuthService.login(db, email, password)
-    access_token, refresh_token = AuthService.create_tokens(user.email)
+    access_token, refresh_token = AuthService.create_tokens(user.id)
 
     response.set_cookie(
         key="refresh_token", 

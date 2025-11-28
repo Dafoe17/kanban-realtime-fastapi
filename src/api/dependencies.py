@@ -4,6 +4,7 @@ from fastapi.security import OAuth2PasswordBearer
 from src.core.security import verify_access_token, JWTValidationError
 from src.models import User
 from src.repositories import UsersRepository
+from uuid import UUID
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token-json")
 
@@ -27,7 +28,7 @@ def get_current_user(
     if not payload:
         raise HTTPException(status_code=401, detail="Token expired")
 
-    user = db.query(User).filter(User.email == payload["sub"]).first()
+    user = db.query(User).filter(User.id == payload["sub"]).first()
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
     return user
@@ -35,7 +36,7 @@ def get_current_user(
 def require_roles(*allowed_roles: str):
     def dependency(
         db,
-        board_id: int,
+        board_id: UUID,
         current_user: User = Depends(get_current_user)
         ):
         user_role = UsersRepository.get_user_role_in_board(

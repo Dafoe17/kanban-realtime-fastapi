@@ -1,6 +1,7 @@
 from fastapi import HTTPException
 from src.repositories import UsersRepository
 from src.schemas import UserRead, UsersListResponse
+from uuid import UUID
 
 class UsersService:
 
@@ -12,8 +13,9 @@ class UsersService:
     @staticmethod
     def get_user(
             db,
-            id: int
+            id: UUID
     ) -> UserRead:
+        print('trying')
         user = UsersRepository.get_by_id(db, id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
