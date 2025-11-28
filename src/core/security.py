@@ -2,6 +2,7 @@ from passlib.context import CryptContext
 from datetime import datetime, timezone, timedelta
 from src.core.config import settings
 from jose import jwt
+from jose import JWTError
 
 
 argon2id_context = CryptContext(schemes=["argon2"], 
@@ -43,7 +44,7 @@ def verify_access_token(token: str) -> dict | None:
             return None
         exp_datetime = datetime.fromtimestamp(exp_timestamp, tz=timezone.utc)
         return payload if exp_datetime >= datetime.now(timezone.utc) else None
-    except jwt.JWTError:
+    except JWTError:
         raise JWTValidationError("Invalid token", status_code=401)
     
 def verify_refresh_token(token: str) -> dict:
@@ -54,5 +55,5 @@ def verify_refresh_token(token: str) -> dict:
             algorithms=[settings.ALGORITHM]
         )
         return payload
-    except jwt.JWTError:
+    except JWTError:
         raise JWTValidationError("Invalid token", status_code=401)
