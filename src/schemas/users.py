@@ -13,9 +13,8 @@ PASSWORD_REGEX = {
 class UserBase(BaseModel):
     username: str
     email: EmailStr
-    created_at: datetime
-    updated_at: datetime
-
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
 
 class UserRead(UserBase):
     id: int = Field(gt=0)
@@ -26,7 +25,8 @@ class UserCreate(UserBase):
     password_hash: str
 
 class UserUpdate(UserBase):
-    pass
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
 
 class UserStatusResponse(BaseModel):
     status: str 
