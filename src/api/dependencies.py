@@ -3,6 +3,7 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from src.core.security import verify_access_token, JWTValidationError
 from src.models import User
+from src.repositories import UsersRepository
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/token-json")
 
@@ -26,18 +27,26 @@ def get_current_user(
     if not payload:
         raise HTTPException(status_code=401, detail="Token expired")
 
-    user = db.query(User).filter(User.username == payload["sub"]).first()
+    user = db.query(User).filter(User.email == payload["sub"]).first()
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
-
     return user
 
 def require_roles(*allowed_roles: str):
-    def roles_checker(current_user: User = Depends(get_current_user)):
-        if current_user.role not in allowed_roles:
+    def dependency(
+        db,
+        board_id: int,
+        current_user: User = Depends(get_current_user)
+        ):
+        user_role = UsersRepository.get_user_role_in_board(
+            db,
+            user_id=current_user.id,
+            board_id=board_id
+        )
+
+        if not user_role or user_role not in allowed_roles:
             raise HTTPException(
                 status_code=403,
                 detail=f"Access denied. Allowed roles: {', '.join(allowed_roles)}"
             )
         return current_user
-    return roles_checker
