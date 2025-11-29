@@ -1,4 +1,4 @@
-from typing import Annotated, Optional
+from typing import Annotated, List, Optional
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, PastDatetime
@@ -33,4 +33,4 @@ class UserColumnPreferencesUpdate(UserColumndPreferencesBase):
 
 class UserColumnPreferencesStatusResponse(BaseModel):
     status: str
-    member: Optional[UserColumnPreferencesRead] = None
+    member: List[UserColumnPreferencesRead] = Field(default_factory=list)

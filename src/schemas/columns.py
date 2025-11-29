@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, PastDatetime
+from pydantic import BaseModel, ConfigDict, Field, PastDatetime
 
 
 class ColumnBase(BaseModel):
@@ -26,4 +26,4 @@ class ColumnUpdate(ColumnBase):
 
 class ColumnsStatusResponse(BaseModel):
     status: str
-    column: Optional[ColumnRead] = None
+    column: List[ColumnRead] = Field(default_factory=list)

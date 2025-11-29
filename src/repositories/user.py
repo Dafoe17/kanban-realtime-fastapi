@@ -45,12 +45,12 @@ class UsersRepository:
 
     @staticmethod
     def get_user_in_board(db: Session, user_id: UUID, board_id: UUID) -> User | None:
-        row = (
+        user_in_board = (
             db.query(UserBoardPreference)
             .filter_by(user_id=user_id, board_id=board_id)
             .first()
         )
-        return row[0] if row else None
+        return user_in_board
 
     @staticmethod
     def add_user(db: Session, data) -> User | None:

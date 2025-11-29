@@ -1,7 +1,7 @@
-from typing import Optional
+from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, FutureDate, PastDatetime
+from pydantic import BaseModel, ConfigDict, Field, FutureDate, PastDatetime
 
 
 class InviteBase(BaseModel):
@@ -26,4 +26,4 @@ class InviteUpdate(InviteBase):
 
 class InviteStatusResponse(BaseModel):
     status: str
-    invite: Optional[InviteRead] = None
+    invite: List[InviteRead] = Field(default_factory=list)

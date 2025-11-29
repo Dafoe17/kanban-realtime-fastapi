@@ -40,4 +40,4 @@ class UsersListResponse(BaseModel):
     total: int = Field(default=0, ge=0)
     skip: Optional[int] = Field(default=None, ge=0)
     limit: Optional[int] = Field(default=None, ge=0)
-    users: List[UserRead] = []
+    users: List[UserRead] = Field(default_factory=list)
