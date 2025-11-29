@@ -2,13 +2,14 @@ from uuid import UUID
 
 from fastapi import HTTPException
 
-from src.permissions import Permission, Role
+from src.permissions import Permission, Role, check_board_permission
 from src.repositories import BoardsRepository
 from src.schemas import (
     BoardCreate,
     BoardRead,
     BoardsListResponse,
     BoardUpdate,
+    UserBoardPreferencesCreate,
     UserBoardPreferencesRead,
 )
 
@@ -16,9 +17,9 @@ from src.schemas import (
 class BoardsService:
 
     @staticmethod
-    def get_board(db, id: UUID, current_user) -> BoardRead:
-
-        board = BoardsRepository.get_board(db, id)
+    def get_board(db, board_id: UUID, current_user) -> BoardRead:
+        check_board_permission(db, current_user, board_id, Permission.BOARD_VIEW)
+        board = BoardsRepository.get_board(db, board_id)
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
@@ -45,15 +46,19 @@ class BoardsService:
         data = data.model_copy(update={"owner_id": current_user.id})
         try:
             board = BoardsRepository.add_board(db, data)
+            prefs = UserBoardPreferencesCreate(
+                board_id=board.id, user_id=current_user.id, role=Role("admin")
+            )
+            BoardsRepository.add_preferences(db, prefs)
             return BoardRead.model_validate(board)
         except Exception as e:
             BoardsRepository.rollback(db)
             raise HTTPException(500, f"Failed to create board: {str(e)}")
 
     @staticmethod
-    def delete_board(db, id: UUID) -> BoardRead:
-
-        board = BoardsRepository.get_board(db, id)
+    def delete_board(db, board_id: UUID, current_user) -> BoardRead:
+        check_board_permission(db, current_user, board_id, Permission.BOARD_DELETE)
+        board = BoardsRepository.get_board(db, board_id)
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
@@ -65,19 +70,19 @@ class BoardsService:
             raise HTTPException(500, f"Failed to delete board: {str(e)}")
 
     @staticmethod
-    def patch_board(db, data: BoardUpdate, board_id: UUID) -> BoardRead:
-
+    def patch_board(db, data: BoardUpdate, board_id: UUID, current_user) -> BoardRead:
+        check_board_permission(db, current_user, board_id, Permission.BOARD_UPDATE)
         board = BoardsRepository.get_board(db, board_id)
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
         board_dict = data.model_dump()
         try:
-            board = BoardsRepository.patch_board(db, board, board_dict)
-            return BoardRead.model_validate(board)
+            db_board = BoardsRepository.patch_board(db, board, board_dict)
+            return BoardRead.model_validate(db_board)
         except Exception as e:
             BoardsRepository.rollback(db)
-            raise HTTPException(500, f"Failed to delete board: {str(e)}")
+            raise HTTPException(500, f"Failed to patch board: {str(e)}")
 
     @staticmethod
     def change_role_or_permissions(
@@ -86,9 +91,10 @@ class BoardsService:
         board_id: UUID,
         role: Role | None,
         custom_permissions: list[Permission] | None,
+        current_user,
     ) -> UserBoardPreferencesRead:
-
-        user_in_board = BoardsRepository.is_user_in_board(db, board_id, user_id)
+        check_board_permission(db, current_user, board_id, Permission.USER_CHANGE_ROLE)
+        user_in_board = BoardsRepository.is_user_in_board(db, user_id, board_id)
         if not user_in_board:
             raise HTTPException(status_code=404, detail="User in board not found")
 
@@ -99,4 +105,4 @@ class BoardsService:
             return UserBoardPreferencesRead.model_validate(user_in_board)
         except Exception as e:
             BoardsRepository.rollback(db)
-            raise HTTPException(500, f"Failed to create board: {str(e)}")
+            raise HTTPException(500, f"Failed to chage role in board: {str(e)}")

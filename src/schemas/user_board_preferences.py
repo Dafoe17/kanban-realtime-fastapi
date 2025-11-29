@@ -14,7 +14,7 @@ class UserBoardPreferencesBase(BaseModel):
     position: Optional[int] = None
     custom_title: Optional[str] = None
     color: ColorStr = "#2424CCFF"
-    role: Role = Role("quest")
+    role: Role = Role("guest")
     custom_permissions: List[Permission] = Field(default_factory=list)
     notification_enabled: bool = False
     is_pinned: bool = False
@@ -23,7 +23,7 @@ class UserBoardPreferencesBase(BaseModel):
 
 class UserBoardPreferencesRead(UserBoardPreferencesBase):
     id: UUID
-    added_at: PastDatetime
+    added_at: Optional[PastDatetime] = None
     model_config = ConfigDict(from_attributes=True)
 
 

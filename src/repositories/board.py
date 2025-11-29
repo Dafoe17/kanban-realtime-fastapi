@@ -14,16 +14,23 @@ class BoardsRepository:
 
     @staticmethod
     def get_user_boards(db: Session, id: UUID):
-        return db.query(UserBoardPreference).filter(UserBoardPreference.user_id == id)
+        return (
+            db.query(Board)
+            .join(UserBoardPreference, UserBoardPreference.board_id == Board.id)
+            .filter(UserBoardPreference.user_id == id)
+        )
 
     @staticmethod
     def is_user_in_board(
         db: Session, user_id: UUID, board_id: UUID
     ) -> UserBoardPreference | None:
-        query = db.query(UserBoardPreference).filter(
-            UserBoardPreference.user_id == user_id
+        query = (
+            db.query(UserBoardPreference)
+            .filter(UserBoardPreference.user_id == user_id)
+            .filter(UserBoardPreference.board_id == board_id)
+            .first()
         )
-        return query.filter(UserBoardPreference.board_id == user_id).first()
+        return query
 
     @staticmethod
     def apply_filters(db: Session, filters: list):
@@ -46,12 +53,20 @@ class BoardsRepository:
         return query.count()
 
     @staticmethod
-    def add_board(db: Session, data) -> Board | None:
-        board = Board(**data)
+    def add_board(db: Session, data) -> Board:
+        board = Board(**data.model_dump())
         db.add(board)
         db.commit()
         db.refresh(board)
         return board
+
+    @staticmethod
+    def add_preferences(db: Session, data) -> UserBoardPreference:
+        prefs = UserBoardPreference(**data.model_dump())
+        db.add(prefs)
+        db.commit()
+        db.refresh(prefs)
+        return prefs
 
     @staticmethod
     def delete_board(db: Session, data) -> Board | None:
@@ -66,7 +81,7 @@ class BoardsRepository:
                 setattr(board, key, value)
         db.commit()
         db.refresh(board)
-        return data
+        return board
 
     @staticmethod
     def patch_role_or_permissions(
@@ -83,6 +98,7 @@ class BoardsRepository:
             )
         db.commit
         db.refresh(user_in_board)
+        return user_in_board
 
     @staticmethod
     def rollback(db: Session) -> None:

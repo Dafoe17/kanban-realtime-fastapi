@@ -4,6 +4,7 @@ from datetime import datetime
 from sqlalchemy import ARRAY, Boolean, DateTime, Enum, ForeignKey, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.sql import func
 
 from src.database import Base
 from src.permissions import Permission, Role
@@ -31,10 +32,10 @@ class UserBoardPreference(Base):
         nullable=False,
         index=True,
     )
-    position: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
+    position: Mapped[int] = mapped_column(Integer, nullable=True, index=True)
     custom_title: Mapped[str] = mapped_column(String, nullable=True)
     color: Mapped[str] = mapped_column(String, nullable=False)
-    role: Mapped[Role] = mapped_column(Enum(Role), default="quest")
+    role: Mapped[Role] = mapped_column(Enum(Role), default=Role("guest"))
     custom_permissions: Mapped[list[Permission]] = mapped_column(
         ARRAY(String), default=list
     )
@@ -43,4 +44,6 @@ class UserBoardPreference(Base):
     )
     is_pinned: Mapped[bool] = mapped_column(Boolean, nullable=False, index=True)
     is_hidden: Mapped[bool] = mapped_column(Boolean, nullable=False, index=True)
-    added_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    added_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
