@@ -43,9 +43,8 @@ class BoardsService:
     @staticmethod
     def create_board(db, data: BoardCreate, current_user) -> BoardRead:
 
-        data = data.model_copy(update={"owner_id": current_user.id})
         try:
-            board = BoardsRepository.add_board(db, data)
+            board = BoardsRepository.add_board(db, data, current_user.id)
             prefs = UserBoardPreferencesCreate(
                 board_id=board.id, user_id=current_user.id, role=Role("admin")
             )

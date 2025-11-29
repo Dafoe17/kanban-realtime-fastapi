@@ -6,11 +6,11 @@ from pydantic import BaseModel, ConfigDict, Field, PastDatetime
 
 class BoardBase(BaseModel):
     title: str
-    owned_id: UUID
 
 
 class BoardRead(BoardBase):
     id: UUID
+    owner_id: UUID
     created_at: Optional[PastDatetime] = None
     updated_at: Optional[PastDatetime] = None
     model_config = ConfigDict(from_attributes=True)
@@ -22,7 +22,6 @@ class BoardCreate(BoardBase):
 
 class BoardUpdate(BoardBase):
     title: Optional[str] = None
-    owned_id: Optional[UUID] = None
 
 
 class BoardStatusResponse(BaseModel):

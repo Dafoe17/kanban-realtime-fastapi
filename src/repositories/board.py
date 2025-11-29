@@ -53,8 +53,8 @@ class BoardsRepository:
         return query.count()
 
     @staticmethod
-    def add_board(db: Session, data) -> Board:
-        board = Board(**data.model_dump())
+    def add_board(db: Session, data, user_id: UUID) -> Board:
+        board = Board(**data.model_dump(), owner_id=user_id)
         db.add(board)
         db.commit()
         db.refresh(board)
