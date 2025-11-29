@@ -1,21 +1,17 @@
+from uuid import UUID
+
 from fastapi import HTTPException
+
 from src.repositories import UsersRepository
 from src.schemas import UserRead, UsersListResponse
-from uuid import UUID
+
 
 class UsersService:
 
-    ALLOWED_SORT_FIELDS = {
-        "username", 
-        "email"
-        }
-    
+    ALLOWED_SORT_FIELDS = {"username", "email"}
+
     @staticmethod
-    def get_user(
-            db,
-            id: UUID
-    ) -> UserRead:
-        print('trying')
+    def get_user(db, id: UUID) -> UserRead:
         user = UsersRepository.get_by_id(db, id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
@@ -28,13 +24,12 @@ class UsersService:
         limit: int | None,
         search: str | None,
         sort_by: str,
-        order: str
+        order: str,
     ) -> UsersListResponse:
-        
+
         if sort_by not in UsersService.ALLOWED_SORT_FIELDS:
             raise HTTPException(
-                status_code=400,
-                detail=f"Invalid sort field: {sort_by}"
+                status_code=400, detail=f"Invalid sort field: {sort_by}"
             )
 
         filters = []
@@ -51,36 +46,32 @@ class UsersService:
             total=total,
             skip=skip,
             limit=limit,
-            users=[UserRead.model_validate(user) for user in users]
+            users=[UserRead.model_validate(user) for user in users],
         )
         return response
 
     @staticmethod
-    def patch_user(
-        db,
-        current_user,
-        data
-    ):  
-        if data.email and UsersRepository.get_by_email(db, data.email) and current_user.email != data.email:
+    def patch_user(db, current_user, data) -> UserRead:
+        if (
+            data.email
+            and UsersRepository.get_by_email(db, data.email)
+            and current_user.email != data.email
+        ):
             raise HTTPException(status_code=409, detail="Email already in use")
 
-        user_dict = data.dict()
+        user_dict = data.model_dump()
         try:
             user = UsersRepository.patch_user(db, current_user, user_dict)
-            return user
+            return UserRead.model_validate(user)
         except Exception as e:
             UsersRepository.rollback(db)
             raise HTTPException(500, f"Failed to patch user: {str(e)}")
-        
+
     @staticmethod
-    def delete_user(
-        db,
-        current_user
-    ):
+    def delete_user(db, current_user) -> UserRead:
         try:
             user = UsersRepository.delete_user(db, current_user)
-            return user
+            return UserRead.model_validate(user)
         except Exception as e:
             UsersRepository.rollback(db)
             raise HTTPException(500, f"Failed to delete user: {str(e)}")
-        

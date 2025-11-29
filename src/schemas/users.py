@@ -1,34 +1,40 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator, EmailStr, PastDatetime
-from typing import Optional, List
+from typing import List, Optional
 from uuid import UUID
-import re
 
-PASSWORD_REGEX = {
-    "letter": r"[a-zA-Z]",
-    "digit": r"[0-9]",
-    "special": r"[!.,_]"
-}
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, PastDatetime
+
+from src.schemas import UserBoardPreferencesRead, UserColumnPreferencesRead
+
+PASSWORD_REGEX = {"letter": r"[a-zA-Z]", "digit": r"[0-9]", "special": r"[!.,_]"}
+
 
 class UserBase(BaseModel):
     username: str
     email: EmailStr
 
+
 class UserRead(UserBase):
     id: UUID
     created_at: Optional[PastDatetime] = None
     updated_at: Optional[PastDatetime] = None
+    board_preferences: list[UserBoardPreferencesRead] = []
+    column_preferences: list[UserColumnPreferencesRead] = []
     model_config = ConfigDict(from_attributes=True)
+
 
 class UserCreate(UserBase):
     password_hash: str
+
 
 class UserUpdate(UserBase):
     username: Optional[str] = None
     email: Optional[EmailStr] = None
 
+
 class UserStatusResponse(BaseModel):
-    status: str 
+    status: str
     user: List[UserRead] | None = None
+
 
 class UsersListResponse(BaseModel):
     total: int = Field(default=0, ge=0)
