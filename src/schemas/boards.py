@@ -1,11 +1,13 @@
-from pydantic import BaseModel, ConfigDict, Field, field_validator, PastDatetime
-from typing import Optional
-from datetime import datetime
+from typing import List, Optional
 from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict, Field, PastDatetime
+
 
 class BoardBase(BaseModel):
     title: str
     owned_id: UUID
+
 
 class BoardRead(BoardBase):
     id: UUID
@@ -13,12 +15,23 @@ class BoardRead(BoardBase):
     updated_at: Optional[PastDatetime] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class BoardCreate(BoardBase):
     pass
 
+
 class BoardUpdate(BoardBase):
-    pass
+    title: Optional[str] = None
+    owned_id: Optional[UUID] = None
+
 
 class BoardStatusResponse(BaseModel):
-    status: str 
+    status: str
     board: Optional[BoardRead] = None
+
+
+class BoardsListResponse(BaseModel):
+    total: int = Field(default=0, ge=0)
+    skip: Optional[int] = Field(default=None, ge=0)
+    limit: Optional[int] = Field(default=None, ge=0)
+    boards: List[BoardRead] = []
