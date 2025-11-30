@@ -59,7 +59,7 @@ async def patch_column(
 
 
 @router.post(
-    "/create/in_board={board_id}",
+    "/create/in-board={board_id}",
     response_model=ColumnRead,
     operation_id="create-column",
 )
