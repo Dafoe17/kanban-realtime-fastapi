@@ -1,5 +1,6 @@
 from .board import BoardsRepository
 from .board_preference import UserBoardPrefRepository
+from .card import CardsRepository
 from .column import ColumnsRepository
 from .user import UsersRepository
 
@@ -8,4 +9,5 @@ __all__ = [
     "BoardsRepository",
     "UserBoardPrefRepository",
     "ColumnsRepository",
+    "CardsRepository",
 ]
