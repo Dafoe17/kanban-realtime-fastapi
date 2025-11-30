@@ -8,7 +8,13 @@ from .boards import (
 from .cards.cards import CardCreate, CardRead, CardsListResponse, CardStatusResponse
 from .columns import ColumnCreate, ColumnRead, ColumnsStatusResponse
 from .invites import InviteCreate, InviteRead, InviteStatusResponse
-from .user_board_preferences import UserBoardPreferencesCreate, UserBoardPreferencesRead
+from .user_board_preferences import (
+    UserBoardPreferencesBooalenUpdate,
+    UserBoardPreferencesCreate,
+    UserBoardPreferencesListResponse,
+    UserBoardPreferencesRead,
+    UserBoardPreferencesUpdate,
+)
 from .user_column_preferences import (
     UserColumnPreferencesCreate,
     UserColumnPreferencesRead,
@@ -48,4 +54,7 @@ __all__ = [
     "UserColumnPreferencesRead",
     "UserColumnPreferencesCreate",
     "UserColumnPreferencesStatusResponse",
+    "UserBoardPreferencesListResponse",
+    "UserBoardPreferencesUpdate",
+    "UserBoardPreferencesBooalenUpdate",
 ]
