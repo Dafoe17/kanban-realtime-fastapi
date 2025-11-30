@@ -26,7 +26,7 @@ class BoardsService:
         return BoardRead.model_validate(board)
 
     @staticmethod
-    def get_my_boards(db, current_user, skip) -> BoardsListResponse:
+    def get_my_boards(db, current_user, skip: int | None) -> BoardsListResponse:
         query = BoardsRepository.get_user_boards(db, current_user.id)
         total = BoardsRepository.count(query)
         boards = BoardsRepository.paginate(query, skip, 5)
@@ -62,8 +62,8 @@ class BoardsService:
             raise HTTPException(status_code=404, detail="Board not found")
 
         try:
-            board = BoardsRepository.delete_board(db, board)
-            return BoardRead.model_validate(board)
+            db_board = BoardsRepository.delete_board(db, board)
+            return BoardRead.model_validate(db_board)
         except Exception as e:
             BoardsRepository.rollback(db)
             raise HTTPException(500, f"Failed to delete board: {str(e)}")

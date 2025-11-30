@@ -7,8 +7,6 @@ ColorStr = Annotated[str, Field(pattern=r"^#[0-9A-Fa-f]{8}$")]  # #RRGGBBAA
 
 
 class UserColumndPreferencesBase(BaseModel):
-    column_id: UUID
-    user_id: UUID
     position: Optional[int] = None
     custom_title: Optional[str] = None
     color: ColorStr = "#6C6C7AFF"
@@ -19,12 +17,15 @@ class UserColumndPreferencesBase(BaseModel):
 
 class UserColumnPreferencesRead(UserColumndPreferencesBase):
     id: UUID
+    column_id: UUID
+    user_id: UUID
     added_at: PastDatetime
     model_config = ConfigDict(from_attributes=True)
 
 
 class UserColumnPreferencesCreate(UserColumndPreferencesBase):
-    pass
+    column_id: UUID
+    user_id: UUID
 
 
 class UserColumnPreferencesUpdate(UserColumndPreferencesBase):
