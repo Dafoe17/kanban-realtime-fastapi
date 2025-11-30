@@ -14,7 +14,7 @@ from src.schemas import (
 )
 from src.services import BoardsService
 
-router = APIRouter(prefix="/boards", tags=["Boards"])
+router = APIRouter(prefix="/boards", tags=["🗂️ Boards"])
 
 
 @router.get(

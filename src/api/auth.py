@@ -6,7 +6,7 @@ from src.core.config import settings
 from src.schemas import UserCreate
 from src.services import AuthService
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(prefix="/auth", tags=["🔐 Auth"])
 
 
 # For OAuth2PasswordBearer

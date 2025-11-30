@@ -8,7 +8,7 @@ from src.models import User
 from src.schemas import UserRead, UsersListResponse, UserUpdate
 from src.services import UsersService
 
-router = APIRouter(prefix="/users", tags=["Users"])
+router = APIRouter(prefix="/users", tags=["👤 Users"])
 
 
 @router.get("/me", response_model=UserRead, operation_id="get-my-info")
