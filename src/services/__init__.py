@@ -1,6 +1,7 @@
 from .auth import AuthService
 from .board import BoardsService
 from .board_preference import BoardPreferencesService
+from .card import CardsService
 from .columns import ColumnsService
 from .user import UsersService
 
@@ -10,4 +11,5 @@ __all__ = [
     "BoardsService",
     "BoardPreferencesService",
     "ColumnsService",
+    "CardsService",
 ]

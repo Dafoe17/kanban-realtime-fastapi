@@ -5,7 +5,13 @@ from .boards import (
     BoardStatusResponse,
     BoardUpdate,
 )
-from .cards.cards import CardCreate, CardRead, CardsListResponse, CardStatusResponse
+from .cards.cards import (
+    CardCreate,
+    CardRead,
+    CardsListResponse,
+    CardStatusResponse,
+    CardUpdate,
+)
 from .columns import (
     ColumnCreate,
     ColumnRead,
@@ -55,6 +61,7 @@ __all__ = [
     "ColumnsStatusResponse",
     "CardRead",
     "CardCreate",
+    "CardUpdate",
     "CardStatusResponse",
     "CardsListResponse",
     "UserBoardPreferencesRead",

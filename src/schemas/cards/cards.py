@@ -5,15 +5,15 @@ from pydantic import BaseModel, ConfigDict, Field, PastDatetime
 
 
 class CardBase(BaseModel):
-    column_id: UUID
     title: str
-    description: str
-    position: str
+    description: Optional[str] = None
     assigned_to: Optional[UUID] = Field(default=None)
 
 
 class CardRead(CardBase):
     id: UUID
+    column_id: UUID
+    position: int
     created_at: Optional[PastDatetime] = None
     updated_at: Optional[PastDatetime] = None
     model_config = ConfigDict(from_attributes=True)
@@ -24,7 +24,7 @@ class CardCreate(CardBase):
 
 
 class CardUpdate(CardBase):
-    pass
+    title: Optional[str] = None
 
 
 class CardStatusResponse(BaseModel):
