@@ -6,7 +6,13 @@ from .boards import (
     BoardUpdate,
 )
 from .cards.cards import CardCreate, CardRead, CardsListResponse, CardStatusResponse
-from .columns import ColumnCreate, ColumnRead, ColumnsStatusResponse
+from .columns import (
+    ColumnCreate,
+    ColumnRead,
+    ColumnsListResponse,
+    ColumnsStatusResponse,
+    ColumnUpdate,
+)
 from .invites import InviteCreate, InviteRead, InviteStatusResponse
 from .user_board_preferences import (
     UserBoardPreferencesBooalenUpdate,
@@ -44,6 +50,8 @@ __all__ = [
     "InviteStatusResponse",
     "ColumnRead",
     "ColumnCreate",
+    "ColumnUpdate",
+    "ColumnsListResponse",
     "ColumnsStatusResponse",
     "CardRead",
     "CardCreate",
