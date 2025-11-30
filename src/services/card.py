@@ -10,7 +10,7 @@ from src.schemas import CardCreate, CardRead, CardsListResponse, CardUpdate
 class CardsService:
 
     @staticmethod
-    def get_column_cards(column_id: UUID, db, current_user, skip: int | None):
+    def get_column_cards(column_id: UUID, db, current_user, skip: int):
         column = ColumnsRepository.get_column(db, column_id=column_id)
         if not column:
             raise HTTPException(status_code=404, detail="Column not found")
