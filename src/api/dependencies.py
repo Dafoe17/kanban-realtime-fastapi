@@ -16,19 +16,24 @@ def get_db():
         db.close()
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
-) -> User:
-    try:
-        payload = verify_access_token(token)
+def get_user_from_token(token: str, db: Session) -> User:
 
-    except JWTValidationError as e:
-        raise HTTPException(status_code=401, detail=str(e))
+    payload = verify_access_token(token)
 
     if not payload:
-        raise HTTPException(status_code=401, detail="Token expired")
+        raise HTTPException(status_code=401, detail="Token expired or invalid")
 
     user = db.query(User).filter(User.id == payload["sub"]).first()
     if user is None:
         raise HTTPException(status_code=401, detail="User not found")
     return user
+
+
+def get_current_user(
+    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+) -> User:
+
+    try:
+        return get_user_from_token(token, db)
+    except JWTValidationError as e:
+        raise HTTPException(status_code=401, detail=str(e))
