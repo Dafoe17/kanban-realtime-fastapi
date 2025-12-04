@@ -7,6 +7,7 @@ from .boards import (
 )
 from .cards.cards import (
     CardCreate,
+    CardMove,
     CardRead,
     CardsListResponse,
     CardStatusResponse,
@@ -14,6 +15,7 @@ from .cards.cards import (
 )
 from .columns import (
     ColumnCreate,
+    ColumnMove,
     ColumnRead,
     ColumnsListResponse,
     ColumnsStatusResponse,
@@ -26,11 +28,6 @@ from .user_board_preferences import (
     UserBoardPreferencesListResponse,
     UserBoardPreferencesRead,
     UserBoardPreferencesUpdate,
-)
-from .user_column_preferences import (
-    UserColumnPreferencesCreate,
-    UserColumnPreferencesRead,
-    UserColumnPreferencesStatusResponse,
 )
 from .users import (
     UserCreate,
@@ -57,18 +54,17 @@ __all__ = [
     "ColumnRead",
     "ColumnCreate",
     "ColumnUpdate",
+    "ColumnMove",
     "ColumnsListResponse",
     "ColumnsStatusResponse",
     "CardRead",
     "CardCreate",
     "CardUpdate",
+    "CardMove",
     "CardStatusResponse",
     "CardsListResponse",
     "UserBoardPreferencesRead",
     "UserBoardPreferencesCreate",
-    "UserColumnPreferencesRead",
-    "UserColumnPreferencesCreate",
-    "UserColumnPreferencesStatusResponse",
     "UserBoardPreferencesListResponse",
     "UserBoardPreferencesUpdate",
     "UserBoardPreferencesBooalenUpdate",
