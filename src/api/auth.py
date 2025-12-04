@@ -42,7 +42,7 @@ async def login(
     response.set_cookie(
         key="access_token",
         value=access_token,
-        httponly=True,
+        httponly=False,
         secure=False,  # потом True верни
         samesite="lax",
         max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
@@ -69,7 +69,7 @@ async def refresh(
     response.set_cookie(
         key="access_token",
         value=new_access,
-        httponly=True,
+        httponly=False,
         secure=False,  # потом True верни
         samesite="lax",
         max_age=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
