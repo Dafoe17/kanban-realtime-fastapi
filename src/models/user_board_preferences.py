@@ -35,7 +35,7 @@ class UserBoardPreference(Base):
     position: Mapped[int] = mapped_column(Integer, nullable=True, index=True)
     custom_title: Mapped[str] = mapped_column(String, nullable=True)
     color: Mapped[str] = mapped_column(String, nullable=False)
-    role: Mapped[Role] = mapped_column(Enum(Role), default=Role("guest"))
+    role: Mapped[Role] = mapped_column(Enum(Role), default=Role("user"))
     custom_permissions: Mapped[list[Permission]] = mapped_column(
         ARRAY(String), default=list
     )
