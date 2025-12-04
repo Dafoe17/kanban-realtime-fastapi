@@ -32,6 +32,12 @@ class CardCreate(CardBase):
 
 class CardUpdate(CardBase):
     title: Optional[str] = None
+    description: Optional[str] = None
+    assigned_to: Optional[UUID] = Field(default=None)
+
+
+class CardMove(BaseModel):
+    position: int
 
 
 class CardStatusResponse(BaseModel):

@@ -12,6 +12,7 @@ class ColumnBase(BaseModel):
 class ColumnRead(ColumnBase):
     id: UUID
     board_id: UUID
+    position: int
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     model_config = ConfigDict(
@@ -29,6 +30,10 @@ class ColumnCreate(ColumnBase):
 
 class ColumnUpdate(ColumnBase):
     title: Optional[str] = None
+
+
+class ColumnMove(BaseModel):
+    position: int
 
 
 class ColumnsStatusResponse(BaseModel):
