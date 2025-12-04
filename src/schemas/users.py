@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, PastDatetime
 
-from src.schemas import UserBoardPreferencesRead, UserColumnPreferencesRead
+from src.schemas import UserBoardPreferencesRead
 
 PASSWORD_REGEX = {"letter": r"[a-zA-Z]", "digit": r"[0-9]", "special": r"[!.,_]"}
 
@@ -18,7 +18,6 @@ class UserRead(UserBase):
     created_at: Optional[PastDatetime] = None
     updated_at: Optional[PastDatetime] = None
     board_preferences: list[UserBoardPreferencesRead] = []
-    column_preferences: list[UserColumnPreferencesRead] = []
     model_config = ConfigDict(from_attributes=True)
 
 
