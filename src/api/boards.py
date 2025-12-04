@@ -13,6 +13,7 @@ from src.schemas import (
     UserBoardPreferencesRead,
 )
 from src.services import BoardsService
+from src.ws import manager
 
 router = APIRouter(prefix="/boards", tags=["🗂️ Boards"])
 
@@ -90,6 +91,10 @@ async def delete_board(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return BoardsService.delete_board(
+
+    board = BoardsService.delete_board(
         db=db, board_id=board_id, current_user=current_user
     )
+
+    await manager.close_board_connections(board_id)
+    return board

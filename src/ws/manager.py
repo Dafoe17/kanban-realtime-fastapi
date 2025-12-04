@@ -51,6 +51,15 @@ class WSConnectionManager:
             if not self.active_connections[board_id]:
                 del self.active_connections[board_id]
 
+    async def close_board_connections(self, board_id: UUID):
+        connections = self.active_connections.get(board_id, [])
+        for ws in connections:
+            try:
+                await ws.close(code=1001)
+            except any:
+                pass
+        self.active_connections.pop(board_id, None)
+
     async def broadcast(self, board_id: UUID, message: str):
         for ws in self.active_connections.get(board_id, []):
             await ws.send_text(message)
