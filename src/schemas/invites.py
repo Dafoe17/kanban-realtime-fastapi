@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, FutureDate, PastDatetime
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class InviteBase(BaseModel):
@@ -11,8 +12,8 @@ class InviteBase(BaseModel):
 
 class InviteRead(InviteBase):
     id: UUID
-    added_at: Optional[PastDatetime] = None
-    expiret_at: Optional[FutureDate] = None
+    added_at: Optional[datetime] = None
+    expiret_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
 

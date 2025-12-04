@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, PastDatetime
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class BoardBase(BaseModel):
@@ -11,8 +12,8 @@ class BoardBase(BaseModel):
 class BoardRead(BoardBase):
     id: UUID
     owner_id: UUID
-    created_at: Optional[PastDatetime] = None
-    updated_at: Optional[PastDatetime] = None
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
 

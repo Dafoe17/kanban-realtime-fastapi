@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, PastDatetime
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ColumnBase(BaseModel):
@@ -11,9 +12,15 @@ class ColumnBase(BaseModel):
 class ColumnRead(ColumnBase):
     id: UUID
     board_id: UUID
-    created_at: Optional[PastDatetime] = None
-    updated_at: Optional[PastDatetime] = None
-    model_config = ConfigDict(from_attributes=True)
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_encoders={
+            UUID: str,
+            datetime: lambda v: v.isoformat(),
+        },
+    )
 
 
 class ColumnCreate(ColumnBase):
