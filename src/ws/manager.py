@@ -4,6 +4,7 @@ from uuid import UUID
 from fastapi import HTTPException, WebSocket, WebSocketDisconnect, WebSocketException
 
 from src.api.dependencies import get_user_from_token
+from src.core.security import JWTValidationError
 from src.database import Session_local
 from src.permissions import Permission, check_board_permission
 
@@ -17,21 +18,27 @@ class WSConnectionManager:
 
     async def connect(self, board_id: UUID, websocket: WebSocket):
 
-        access_token = websocket.cookies.get("access_token")
-        if not access_token:
-            raise WebSocketException(1008)
-
-        await websocket.accept()
-        db = self._get_db()
         try:
+            access_token = websocket.cookies.get("access_token")
+            if not access_token:
+                raise WebSocketException(1008)
+
+            await websocket.accept()
+            db = self._get_db()
             user = get_user_from_token(access_token, db)
-            await websocket.send_text(f"Connected as {user.username}: {user.email}")
-            try:
-                check_board_permission(db, user, board_id, Permission.BOARD_VIEW)
-            except HTTPException as e:
-                await websocket.send_text(f"forbidden: {e.detail}")
-                await websocket.close()
-                return
+
+        except JWTValidationError as e:
+            await websocket.send_text(f"forbidden: {getattr(e, 'detail', str(e))}")
+            await websocket.close()
+            return
+
+        await websocket.send_text(f"Connected as {user.username}: {user.email}")
+        try:
+            check_board_permission(db, user, board_id, Permission.BOARD_VIEW)
+        except HTTPException as e:
+            await websocket.send_text(f"forbidden: {e.detail}")
+            await websocket.close()
+            return
 
         finally:
             db.close()
