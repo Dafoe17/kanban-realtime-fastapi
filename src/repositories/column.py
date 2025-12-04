@@ -43,6 +43,10 @@ class ColumnsRepository:
     @staticmethod
     def delete_column(db: Session, data) -> Column | None:
         db.delete(data)
+        db.flush()
+        db.query(Column).filter(
+            Column.board_id == data.board_id, Column.position > data.position
+        ).update({Column.position: Column.position - 1})
         db.commit()
         return data
 

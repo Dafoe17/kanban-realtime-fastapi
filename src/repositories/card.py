@@ -48,6 +48,10 @@ class CardsRepository:
     @staticmethod
     def delete_card(db: Session, data) -> Card:
         db.delete(data)
+        db.flush()
+        db.query(Card).filter(
+            Card.column_id == data.column_id, Card.position > data.position
+        ).update({Card.position: Card.position - 1})
         db.commit()
         return data
 
