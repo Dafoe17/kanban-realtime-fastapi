@@ -9,11 +9,20 @@ class CardsRepository:
 
     @staticmethod
     def get_card(db: Session, card_id: UUID) -> Card:
-        return db.query(Card).filter_by(card_id=card_id).first()
+        return db.query(Card).filter_by(id=card_id).first()
 
     @staticmethod
     def get_column_cards(db: Session, column_id: UUID):
-        return db.query(Card).filter_by(column_id=column_id)
+        return db.query(Card).filter_by(column_id=column_id).order_by(Card.position)
+
+    @staticmethod
+    def get_last_column_card(db: Session, column_id: UUID):
+        return (
+            db.query(Card.position)
+            .filter_by(column_id=column_id)
+            .order_by(Card.position.desc())
+            .first()
+        )
 
     @staticmethod
     def paginate(query, skip: int | None, limit: int | None) -> list[Card]:
@@ -24,8 +33,8 @@ class CardsRepository:
         return query.count()
 
     @staticmethod
-    def add_card(db: Session, data, column_id: UUID) -> Card:
-        card = Card(**data.model_dump(), column_id=column_id)
+    def add_card(db: Session, data, column_id: UUID, new_position: int) -> Card:
+        card = Card(**data.model_dump(), column_id=column_id, position=new_position)
         db.add(card)
         db.commit()
         db.refresh(card)

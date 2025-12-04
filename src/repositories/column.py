@@ -9,11 +9,20 @@ class ColumnsRepository:
 
     @staticmethod
     def get_column(db: Session, column_id: UUID) -> Column:
-        return db.query(Column).filter_by(column_id=column_id).first()
+        return db.query(Column).filter_by(id=column_id).first()
 
     @staticmethod
     def get_board_columns(db: Session, board_id: UUID):
-        return db.query(Column).filter_by(board_id=board_id)
+        return db.query(Column).filter_by(board_id=board_id).order_by(Column.position)
+
+    @staticmethod
+    def get_last_board_column(db: Session, board_id: UUID):
+        return (
+            db.query(Column.position)
+            .filter_by(board_id=board_id)
+            .order_by(Column.position.desc())
+            .first()
+        )
 
     @staticmethod
     def paginate(query, skip: int | None, limit: int | None) -> list[Column]:
@@ -24,8 +33,8 @@ class ColumnsRepository:
         return query.count()
 
     @staticmethod
-    def add_column(db: Session, data, board_id: UUID) -> Column:
-        column = Column(**data.model_dump(), board_id=board_id)
+    def add_column(db: Session, data, board_id: UUID, new_position: int) -> Column:
+        column = Column(**data.model_dump(), board_id=board_id, position=new_position)
         db.add(column)
         db.commit()
         db.refresh(column)
