@@ -48,7 +48,7 @@ class ColumnDeletedPayload(ColumnPayload):
 class CardPayload(BaseModel):
     id: UUID
     column_id: UUID
-    board_id: UUID
+    board_id: Optional[UUID]
 
     model_config = {"from_attributes": True}
 

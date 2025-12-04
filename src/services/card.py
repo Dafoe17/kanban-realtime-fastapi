@@ -81,7 +81,9 @@ class CardsService:
         card_dict = data.model_dump()
         try:
             db_card = CardsRepository.patch_card(db, card, card_dict)
-            payload = CardUpdatedPayload.model_validate(db_card)
+            payload = CardUpdatedPayload.model_validate(
+                {**db_card.__dict__, "board_id": board.id}
+            )
             payload.board_id = board.id
             return payload
         except Exception as e:
@@ -113,8 +115,9 @@ class CardsService:
         card_dict = data.model_dump()
         try:
             db_card = CardsRepository.patch_card(db, card, card_dict)
-            payload = CardMovedPayload.model_validate(db_card)
-            payload.board_id = board.id
+            payload = CardMovedPayload.model_validate(
+                {**db_card.__dict__, "board_id": board.id}
+            )
             return payload
         except Exception as e:
             CardsRepository.rollback(db)
@@ -139,8 +142,9 @@ class CardsService:
 
         try:
             db_card = CardsRepository.add_card(db, data, column_id, new_position)
-            payload = CardCreatedPayload.model_validate(db_card)
-            payload.board_id = board.id
+            payload = CardCreatedPayload.model_validate(
+                {**db_card.__dict__, "board_id": board.id}
+            )
             return payload
         except Exception as e:
             CardsRepository.rollback(db)
@@ -164,8 +168,9 @@ class CardsService:
 
         try:
             db_card = CardsRepository.delete_card(db, card)
-            payload = CardDeletedPayload.model_validate(db_card)
-            payload.board_id = board.id
+            payload = CardDeletedPayload.model_validate(
+                {**db_card.__dict__, "board_id": board.id}
+            )
             return payload
         except Exception as e:
             CardsRepository.rollback(db)

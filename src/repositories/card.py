@@ -34,11 +34,16 @@ class CardsRepository:
 
     @staticmethod
     def add_card(db: Session, data, column_id: UUID, new_position: int) -> Card:
-        card = Card(**data.model_dump(), column_id=column_id, position=new_position)
+        card = Card(
+            **data.model_dump(),
+            column_id=column_id,
+            position=new_position,
+            assigned_to=None,
+        )
         db.add(card)
         db.commit()
         db.refresh(card)
-        return data
+        return card
 
     @staticmethod
     def delete_card(db: Session, data) -> Card:

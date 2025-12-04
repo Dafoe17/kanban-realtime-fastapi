@@ -8,13 +8,13 @@ from pydantic import BaseModel, ConfigDict, Field
 class CardBase(BaseModel):
     title: str
     description: Optional[str] = None
-    assigned_to: Optional[UUID] = Field(default=None)
 
 
 class CardRead(CardBase):
     id: UUID
     column_id: UUID
     position: int
+    assigned_to: Optional[UUID] = Field(default=None)
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     model_config = ConfigDict(
