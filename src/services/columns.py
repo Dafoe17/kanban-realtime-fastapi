@@ -19,7 +19,7 @@ class ColumnsService:
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
-        check_board_permission(db, current_user, board.id, Permission.COLUMN_VIEW)
+        check_board_permission(db, current_user, board.id, Permission.BOARD_VIEW)
 
         return ColumnRead.model_validate(column)
 
@@ -31,7 +31,7 @@ class ColumnsService:
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
-        check_board_permission(db, current_user, board.id, Permission.COLUMN_VIEW)
+        check_board_permission(db, current_user, board.id, Permission.BOARD_VIEW)
 
         query = ColumnsRepository.get_board_columns(db, board_id)
         total = ColumnsRepository.count(query)
@@ -52,12 +52,10 @@ class ColumnsService:
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
-        check_board_permission(db, current_user, board.id, Permission.COLUMN_CREATE)
+        check_board_permission(db, current_user, board.id, Permission.BOARD_WRITE)
 
         try:
             column = ColumnsRepository.add_column(db, data, board_id)
-            # to do
-            # prefs = UserColumnPreferencesCreate
             return ColumnRead.model_validate(column)
         except Exception as e:
             ColumnsRepository.rollback(db)
@@ -73,7 +71,7 @@ class ColumnsService:
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
-        check_board_permission(db, current_user, board.id, Permission.COLUMN_DELETE)
+        check_board_permission(db, current_user, board.id, Permission.BOARD_WRITE)
 
         try:
             db_column = ColumnsRepository.delete_column(db, column)
@@ -94,7 +92,7 @@ class ColumnsService:
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
-        check_board_permission(db, current_user, board.id, Permission.COLUMN_UPDATE)
+        check_board_permission(db, current_user, board.id, Permission.BOARD_WRITE)
 
         column_dict = data.model_dump()
         try:

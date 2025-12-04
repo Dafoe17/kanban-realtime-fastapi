@@ -19,7 +19,7 @@ class CardsService:
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
-        check_board_permission(db, current_user, board.id, Permission.CARD_VIEW)
+        check_board_permission(db, current_user, board.id, Permission.BOARD_VIEW)
 
         query = CardsRepository.get_column_cards(db, column_id)
         total = CardsRepository.count(query)
@@ -48,7 +48,7 @@ class CardsService:
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
-        check_board_permission(db, current_user, board.id, Permission.CARD_VIEW)
+        check_board_permission(db, current_user, board.id, Permission.BOARD_VIEW)
 
         return CardRead.model_validate(card)
 
@@ -66,7 +66,7 @@ class CardsService:
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
-        check_board_permission(db, current_user, board.id, Permission.CARD_UPDATE)
+        check_board_permission(db, current_user, board.id, Permission.BOARD_WRITE)
 
         card_dict = data.model_dump()
         try:
@@ -86,7 +86,7 @@ class CardsService:
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
-        check_board_permission(db, current_user, board.id, Permission.CARD_CREATE)
+        check_board_permission(db, current_user, board.id, Permission.BOARD_WRITE)
 
         try:
             card = CardsRepository.add_card(db, data, column_id)
@@ -109,7 +109,7 @@ class CardsService:
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
-        check_board_permission(db, current_user, board.id, Permission.CARD_DELETE)
+        check_board_permission(db, current_user, board.id, Permission.BOARD_WRITE)
 
         try:
             db_card = CardsRepository.delete_card(db, card)

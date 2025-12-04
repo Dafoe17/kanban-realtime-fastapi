@@ -56,7 +56,7 @@ class BoardsService:
 
     @staticmethod
     def delete_board(db, board_id: UUID, current_user) -> BoardRead:
-        check_board_permission(db, current_user, board_id, Permission.BOARD_DELETE)
+        check_board_permission(db, current_user, board_id, Permission.BOARD_MANAGE)
         board = BoardsRepository.get_board(db, board_id)
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
@@ -70,7 +70,7 @@ class BoardsService:
 
     @staticmethod
     def patch_board(db, data: BoardUpdate, board_id: UUID, current_user) -> BoardRead:
-        check_board_permission(db, current_user, board_id, Permission.BOARD_UPDATE)
+        check_board_permission(db, current_user, board_id, Permission.BOARD_MANAGE)
         board = BoardsRepository.get_board(db, board_id)
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
@@ -92,7 +92,7 @@ class BoardsService:
         custom_permissions: list[Permission] | None,
         current_user,
     ) -> UserBoardPreferencesRead:
-        check_board_permission(db, current_user, board_id, Permission.USER_CHANGE_ROLE)
+        check_board_permission(db, current_user, board_id, Permission.USER_MANAGE)
         user_in_board = BoardsRepository.is_user_in_board(db, user_id, board_id)
         if not user_in_board:
             raise HTTPException(status_code=404, detail="User in board not found")

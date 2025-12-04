@@ -16,10 +16,12 @@ def get_db():
         db.close()
 
 
-def get_user_from_token(token: str, db: Session) -> User:
+def get_user_from_token(token: str | None, db: Session) -> User:
+
+    if not token:
+        raise HTTPException(status_code=401, detail="Missing token")
 
     payload = verify_access_token(token)
-
     if not payload:
         raise HTTPException(status_code=401, detail="Token expired or invalid")
 

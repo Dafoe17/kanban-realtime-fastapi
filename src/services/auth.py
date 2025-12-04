@@ -42,7 +42,7 @@ class AuthService:
             raise HTTPException(500, f"Failed to create user: {str(e)}")
 
     @staticmethod
-    def refresh(refresh_token: str):
+    def refresh(refresh_token: str | None):
 
         if not refresh_token:
             raise HTTPException(status_code=401, detail="Refresh token missing")

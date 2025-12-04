@@ -12,7 +12,7 @@ class UserBoardPreferencesBase(BaseModel):
     position: Optional[int] = None
     custom_title: Optional[str] = None
     color: ColorStr = "#2424CCFF"
-    role: Role = Role("guest")
+    role: Role = Role("user")
     custom_permissions: List[Permission] = Field(default_factory=list)
     notification_enabled: bool = False
     is_pinned: bool = False
