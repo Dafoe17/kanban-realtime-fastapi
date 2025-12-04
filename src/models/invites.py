@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timedelta
 
-from sqlalchemy import DateTime, ForeignKey
+from sqlalchemy import Boolean, DateTime, ForeignKey, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
@@ -25,15 +25,17 @@ class Invite(Base):
         nullable=False,
         index=True,
     )
-    user_id: Mapped[uuid.UUID] = mapped_column(
+    invited_by: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
-        ForeignKey("boards.id", ondelete="CASCADE"),
+        ForeignKey("users.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
     added_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    expiret_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now() + timedelta(hours=1)
+    expires_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now() + timedelta(hours=24)
     )
+    is_used: Mapped[bool] = mapped_column(Boolean, default=False)
+    max_uses: Mapped[int] = mapped_column(Integer, default=1)
