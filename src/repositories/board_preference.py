@@ -8,7 +8,21 @@ from src.models import UserBoardPreference
 class UserBoardPrefRepository:
 
     @staticmethod
-    def get_pref_by_id(db: Session, pref_id: UUID):
+    def check_is_member(db: Session, board_id: UUID, user_id):
+        member = (
+            db.query(UserBoardPreference)
+            .filter(
+                UserBoardPreference.board_id == board_id,
+                UserBoardPreference.user_id == user_id,
+            )
+            .first()
+        )
+        if member:
+            return True
+        return False
+
+    @staticmethod
+    def get_pref_by_id(db: Session, pref_id: UUID) -> UserBoardPreference:
         return db.query(UserBoardPreference).filter_by(id=pref_id).first()
 
     @staticmethod
