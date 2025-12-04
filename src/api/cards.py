@@ -103,6 +103,9 @@ async def delete_card(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+
+    card = CardsService.get_card(card_id, db, current_user)
+
     payload = CardsService.delete_card(
         db=db, card_id=card_id, current_user=current_user
     )
@@ -110,4 +113,4 @@ async def delete_card(
     ws_response = WSBaseResponse(title="card_deleted", payload=payload)
 
     await manager.broadcast(ws_response.payload.board_id, ws_response.model_dump_json())
-    return CardsService.get_card(card_id, db, current_user)
+    return card

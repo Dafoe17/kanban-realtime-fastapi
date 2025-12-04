@@ -115,6 +115,8 @@ async def delete_column(
     current_user: User = Depends(get_current_user),
 ):
 
+    column = ColumnsService.get_column(db, column_id, current_user)
+
     payload = ColumnsService.delete_column(
         db=db, current_user=current_user, column_id=column_id
     )
@@ -122,4 +124,4 @@ async def delete_column(
     ws_response = WSBaseResponse(title="column_deleted", payload=payload)
 
     await manager.broadcast(ws_response.payload.board_id, ws_response.model_dump_json())
-    return ColumnsService.get_column(db, column_id, current_user)
+    return column
