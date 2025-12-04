@@ -4,7 +4,19 @@ from fastapi import HTTPException
 
 from src.permissions import Permission, check_board_permission
 from src.repositories import BoardsRepository, ColumnsRepository
-from src.schemas import ColumnCreate, ColumnRead, ColumnsListResponse, ColumnUpdate
+from src.schemas import (
+    ColumnCreate,
+    ColumnMove,
+    ColumnRead,
+    ColumnsListResponse,
+    ColumnUpdate,
+)
+from src.ws import (
+    ColumnCreatedPayload,
+    ColumnDeletedPayload,
+    ColumnMovedPayload,
+    ColumnUpdatedPayload,
+)
 
 
 class ColumnsService:
@@ -47,22 +59,28 @@ class ColumnsService:
         return response
 
     @staticmethod
-    def create_column(db, board_id: UUID, current_user, data: ColumnCreate):
+    def create_column(
+        db, board_id: UUID, current_user, data: ColumnCreate
+    ) -> ColumnCreatedPayload:
         board = BoardsRepository.get_board(db, board_id)
         if not board:
             raise HTTPException(status_code=404, detail="Board not found")
 
         check_board_permission(db, current_user, board.id, Permission.BOARD_WRITE)
 
+        db_columns = ColumnsRepository.get_last_board_column(db, board_id)
+        new_position = db_columns[0] + 1 if db_columns else 0
+
         try:
-            column = ColumnsRepository.add_column(db, data, board_id)
-            return ColumnRead.model_validate(column)
+            db_column = ColumnsRepository.add_column(db, data, board_id, new_position)
+            payload = ColumnCreatedPayload.model_validate(db_column)
+            return payload
         except Exception as e:
             ColumnsRepository.rollback(db)
             raise HTTPException(500, f"Failed to create board: {str(e)}")
 
     @staticmethod
-    def delete_column(db, column_id: UUID, current_user):
+    def delete_column(db, column_id: UUID, current_user) -> ColumnDeletedPayload:
         column = ColumnsRepository.get_column(db, column_id)
         if not column:
             raise HTTPException(status_code=404, detail="Column not found")
@@ -75,7 +93,8 @@ class ColumnsService:
 
         try:
             db_column = ColumnsRepository.delete_column(db, column)
-            return ColumnRead.model_validate(db_column)
+            payload = ColumnDeletedPayload.model_validate(db_column)
+            return payload
         except Exception as e:
             ColumnsRepository.rollback(db)
             raise HTTPException(500, f"Failed to delete column: {str(e)}")
@@ -83,7 +102,7 @@ class ColumnsService:
     @staticmethod
     def patch_column(
         db, column_id: UUID, current_user, data: ColumnUpdate
-    ) -> ColumnRead:
+    ) -> ColumnUpdatedPayload:
         column = ColumnsRepository.get_column(db, column_id)
         if not column:
             raise HTTPException(status_code=404, detail="Column not found")
@@ -97,7 +116,37 @@ class ColumnsService:
         column_dict = data.model_dump()
         try:
             db_column = ColumnsRepository.patch_column(db, column, column_dict)
-            return ColumnRead.model_validate(db_column)
+            payload = ColumnUpdatedPayload.model_validate(db_column)
+            return payload
         except Exception as e:
             ColumnsRepository.rollback(db)
             raise HTTPException(500, f"Failed to patch column: {str(e)}")
+
+    @staticmethod
+    def move_column(
+        db, column_id: UUID, current_user, data: ColumnMove
+    ) -> ColumnMovedPayload:
+        column = ColumnsRepository.get_column(db, column_id)
+        if not column:
+            raise HTTPException(status_code=404, detail="Column not found")
+
+        board = BoardsRepository.get_board(db, column.board_id)
+        if not board:
+            raise HTTPException(status_code=404, detail="Board not found")
+
+        check_board_permission(db, current_user, board.id, Permission.BOARD_WRITE)
+
+        db_columns = list(ColumnsRepository.get_board_columns(db, board.id))
+        if data.position < 0 or data.position >= db_columns[-1].position:
+            raise HTTPException(
+                400, f"Failed to move, invalid position: {data.position}"
+            )
+
+        column_dict = data.model_dump()
+        try:
+            db_column = ColumnsRepository.patch_column(db, column, column_dict)
+            payload = ColumnMovedPayload.model_validate(db_column)
+            return payload
+        except Exception as e:
+            ColumnsRepository.rollback(db)
+            raise HTTPException(500, f"Failed to move column: {str(e)}")

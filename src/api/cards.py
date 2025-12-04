@@ -4,15 +4,11 @@ from fastapi import APIRouter, Depends, Query
 
 from src.api.dependencies import Session, get_current_user, get_db
 from src.models import User
-from src.schemas import (
-    CardCreate,
-    CardRead,
-    CardsListResponse,
-    CardUpdate,
-)
+from src.schemas import CardCreate, CardMove, CardRead, CardsListResponse, CardUpdate
 from src.services import CardsService
+from src.ws import WSBaseResponse, manager
 
-router = APIRouter(prefix="/cards", tags=[" Cards"])
+router = APIRouter(prefix="/cards", tags=["📄 Cards"])
 
 
 @router.get(
@@ -53,9 +49,31 @@ async def patch_card(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return CardsService.patch_card(
+    payload = CardsService.patch_card(
         card_id=card_id, data=data, db=db, current_user=current_user
     )
+
+    ws_response = WSBaseResponse(title="card_updated", payload=payload)
+
+    await manager.broadcast(ws_response.payload.board_id, ws_response.model_dump_json())
+    return CardsService.get_card(card_id, db, current_user)
+
+
+@router.patch("/move-card/{card_id}", response_model=CardRead, operation_id="move-card")
+async def move_card(
+    card_id: UUID,
+    data: CardMove,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    payload = CardsService.move_card(
+        card_id=card_id, data=data, db=db, current_user=current_user
+    )
+
+    ws_response = WSBaseResponse(title="card_moved", payload=payload)
+
+    await manager.broadcast(ws_response.payload.board_id, ws_response.model_dump_json())
+    return CardsService.get_card(card_id, db, current_user)
 
 
 @router.post(
@@ -67,9 +85,14 @@ async def create_card(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return CardsService.create_card(
+    payload = CardsService.create_card(
         db=db, current_user=current_user, column_id=column_id, data=data
     )
+
+    ws_response = WSBaseResponse(title="card_created", payload=payload)
+
+    await manager.broadcast(ws_response.payload.board_id, ws_response.model_dump_json())
+    return CardsService.get_card(payload.id, db, current_user)
 
 
 @router.delete(
@@ -80,4 +103,11 @@ async def delete_card(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    return CardsService.delete_card(db=db, card_id=card_id, current_user=current_user)
+    payload = CardsService.delete_card(
+        db=db, card_id=card_id, current_user=current_user
+    )
+
+    ws_response = WSBaseResponse(title="card_deleted", payload=payload)
+
+    await manager.broadcast(ws_response.payload.board_id, ws_response.model_dump_json())
+    return CardsService.get_card(card_id, db, current_user)
