@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, PastDatetime
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 from src.schemas import UserBoardPreferencesRead
 
@@ -15,8 +16,8 @@ class UserBase(BaseModel):
 
 class UserRead(UserBase):
     id: UUID
-    created_at: Optional[PastDatetime] = None
-    updated_at: Optional[PastDatetime] = None
+    created_at: datetime
+    updated_at: datetime
     board_preferences: list[UserBoardPreferencesRead] = []
     model_config = ConfigDict(from_attributes=True)
 
