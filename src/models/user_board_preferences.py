@@ -1,7 +1,16 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import ARRAY, Boolean, DateTime, Enum, ForeignKey, Integer, String
+from sqlalchemy import (
+    ARRAY,
+    Boolean,
+    DateTime,
+    Enum,
+    ForeignKey,
+    Integer,
+    String,
+    UniqueConstraint,
+)
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.sql import func
@@ -16,7 +25,7 @@ class UserBoardPreference(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
-        default=lambda: str(uuid.uuid4()),
+        default=uuid.uuid4(),
         nullable=False,
         index=True,
     )
@@ -35,15 +44,18 @@ class UserBoardPreference(Base):
     position: Mapped[int] = mapped_column(Integer, nullable=True, index=True)
     custom_title: Mapped[str] = mapped_column(String, nullable=True)
     color: Mapped[str] = mapped_column(String, nullable=False)
-    role: Mapped[Role] = mapped_column(Enum(Role), default=Role("user"))
+    role: Mapped[Role] = mapped_column(Enum(Role), default=Role.user)
     custom_permissions: Mapped[list[Permission]] = mapped_column(
-        ARRAY(String), default=list
+        ARRAY(Enum(Permission)), default=list
     )
-    notification_enabled: Mapped[bool] = mapped_column(
-        Boolean, nullable=False, index=True
-    )
-    is_pinned: Mapped[bool] = mapped_column(Boolean, nullable=False, index=True)
-    is_hidden: Mapped[bool] = mapped_column(Boolean, nullable=False, index=True)
+    notification_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    is_pinned: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    is_hidden: Mapped[bool] = mapped_column(Boolean, nullable=False)
     added_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
+    )
+
+    __table_args__ = (
+        UniqueConstraint("user_id", "position", name="uq_board_position"),
+        UniqueConstraint("user_id", "board_id", name="uq_board_pref"),
     )

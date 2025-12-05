@@ -15,7 +15,7 @@ class Column(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
-        default=lambda: str(uuid.uuid4()),
+        default=uuid.uuid4(),
         nullable=False,
         index=True,
     )
@@ -35,5 +35,5 @@ class Column(Base):
     )
 
     __table_args__ = (
-        UniqueConstraint("board_id", "position", name="uq_board_position"),
+        UniqueConstraint("board_id", "position", name="uq_column_position"),
     )
