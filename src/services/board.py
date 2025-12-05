@@ -45,8 +45,14 @@ class BoardsService:
 
         try:
             board = BoardsRepository.add_board(db, data, current_user.id)
+            db_prefs = BoardsRepository.get_last_board_pref(db, current_user.id)
+            new_position = db_prefs[0] + 1 if db_prefs else 0
             prefs = UserBoardPreferencesCreate(
-                board_id=board.id, user_id=current_user.id, role=Role("admin")
+                board_id=board.id,
+                user_id=current_user.id,
+                role=Role.admin,
+                position=new_position,
+                custom_title=board.title,
             )
             BoardsRepository.add_preferences(db, prefs)
             return BoardRead.model_validate(board)

@@ -48,8 +48,14 @@ class InviteService:
 
         try:
             invite = InviteRepository.use_invite(db, invite)
+            db_prefs = BoardsRepository.get_last_board_pref(db, current_user.id)
+            new_position = db_prefs[0] + 1 if db_prefs else 0
             prefs = UserBoardPreferencesCreate(
-                board_id=board.id, user_id=current_user.id, role=Role("user")
+                board_id=board.id,
+                user_id=current_user.id,
+                role=Role.user,
+                position=new_position,
+                custom_title=board.title,
             )
             prefs = BoardsRepository.add_preferences(db, prefs)
             return UserBoardPreferencesRead.model_validate(prefs)

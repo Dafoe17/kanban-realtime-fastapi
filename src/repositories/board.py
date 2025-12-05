@@ -69,6 +69,15 @@ class BoardsRepository:
         return prefs
 
     @staticmethod
+    def get_last_board_pref(db: Session, user_id: UUID):
+        return (
+            db.query(UserBoardPreference.position)
+            .filter_by(user_id=user_id)
+            .order_by(UserBoardPreference.position.desc())
+            .first()
+        )
+
+    @staticmethod
     def delete_board(db: Session, data) -> Board | None:
         db.delete(data)
         db.commit()

@@ -6,6 +6,7 @@ from src.repositories import UserBoardPrefRepository
 from src.schemas import (
     UserBoardPreferencesBooalenUpdate,
     UserBoardPreferencesListResponse,
+    UserBoardPreferencesMove,
     UserBoardPreferencesRead,
     UserBoardPreferencesUpdate,
 )
@@ -78,6 +79,33 @@ class BoardPreferencesService:
 
         pref_dict = data.model_dump()
 
+        try:
+            db_pref = UserBoardPrefRepository.patch_pref(db, board_pref, pref_dict)
+            return UserBoardPreferencesRead.model_validate(db_pref)
+        except Exception as e:
+            UserBoardPrefRepository.rollback(db)
+            raise HTTPException(
+                500, f"Failed to change user preferences for board: {str(e)}"
+            )
+
+    @staticmethod
+    def move_user_board_pref(
+        db, current_user, pref_id: UUID, data: UserBoardPreferencesMove
+    ) -> UserBoardPreferencesRead:
+        board_pref = UserBoardPrefRepository.get_pref_by_id(db, pref_id)
+
+        if not board_pref:
+            raise HTTPException(
+                status_code=404, detail="User preferences for the board not found"
+            )
+
+        db_prefs = list(UserBoardPrefRepository.get_user_boards(db, current_user.id))
+        if data.position < 0 or data.position >= db_prefs[-1].position:
+            raise HTTPException(
+                400, f"Failed to move, invalid position: {data.position}"
+            )
+
+        pref_dict = data.model_dump()
         try:
             db_pref = UserBoardPrefRepository.patch_pref(db, board_pref, pref_dict)
             return UserBoardPreferencesRead.model_validate(db_pref)

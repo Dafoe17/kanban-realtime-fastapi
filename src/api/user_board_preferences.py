@@ -7,6 +7,7 @@ from src.models import User
 from src.schemas import (
     UserBoardPreferencesBooalenUpdate,
     UserBoardPreferencesListResponse,
+    UserBoardPreferencesMove,
     UserBoardPreferencesRead,
     UserBoardPreferencesUpdate,
 )
@@ -72,5 +73,21 @@ async def patch_user_board_state(
     current_user: User = Depends(get_current_user),
 ):
     return BoardPreferencesService.patch_user_board_state(
+        db=db, current_user=current_user, pref_id=pref_id, data=data
+    )
+
+
+@router.patch(
+    "/patch/{pref_id}/move",
+    response_model=UserBoardPreferencesRead,
+    operation_id="patch-user-board-pref-states",
+)
+async def move_user_board_pref(
+    pref_id: UUID,
+    data: UserBoardPreferencesMove,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return BoardPreferencesService.move_user_board_pref(
         db=db, current_user=current_user, pref_id=pref_id, data=data
     )

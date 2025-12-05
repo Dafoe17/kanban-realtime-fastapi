@@ -26,6 +26,7 @@ from .user_board_preferences import (
     UserBoardPreferencesBooalenUpdate,
     UserBoardPreferencesCreate,
     UserBoardPreferencesListResponse,
+    UserBoardPreferencesMove,
     UserBoardPreferencesRead,
     UserBoardPreferencesUpdate,
 )
@@ -68,4 +69,5 @@ __all__ = [
     "UserBoardPreferencesListResponse",
     "UserBoardPreferencesUpdate",
     "UserBoardPreferencesBooalenUpdate",
+    "UserBoardPreferencesMove",
 ]

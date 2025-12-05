@@ -1,7 +1,8 @@
+from datetime import datetime
 from typing import Annotated, List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, PastDatetime
+from pydantic import BaseModel, ConfigDict, Field
 
 from src.permissions import Permission, Role
 
@@ -9,10 +10,9 @@ ColorStr = Annotated[str, Field(pattern=r"^#[0-9A-Fa-f]{8}$")]  # #RRGGBBAA
 
 
 class UserBoardPreferencesBase(BaseModel):
-    position: Optional[int] = None
-    custom_title: Optional[str] = None
+
     color: ColorStr = "#2424CCFF"
-    role: Role = Role("user")
+    role: Role = Role.user
     custom_permissions: List[Permission] = Field(default_factory=list)
     notification_enabled: bool = False
     is_pinned: bool = False
@@ -23,28 +23,32 @@ class UserBoardPreferencesRead(UserBoardPreferencesBase):
     id: UUID
     board_id: UUID
     user_id: UUID
-    added_at: Optional[PastDatetime] = None
+    position: int
+    added_at: datetime
+
     model_config = ConfigDict(from_attributes=True)
 
 
 class UserBoardPreferencesCreate(UserBoardPreferencesBase):
     board_id: UUID
     user_id: UUID
+    position: int
+    custom_title: Optional[str] = None
 
 
 class UserBoardPreferencesUpdate(BaseModel):
-    position: Optional[int] = None
     custom_title: Optional[str] = None
     color: Optional[ColorStr] = None
-    notification_enabled: Optional[bool] = None
-    is_pinned: Optional[bool] = None
-    is_hidden: Optional[bool] = None
 
 
 class UserBoardPreferencesBooalenUpdate(BaseModel):
     notification_enabled: Optional[bool] = None
     is_pinned: Optional[bool] = None
     is_hidden: Optional[bool] = None
+
+
+class UserBoardPreferencesMove(BaseModel):
+    position: int
 
 
 class UserBoardPreferencesListResponse(BaseModel):
