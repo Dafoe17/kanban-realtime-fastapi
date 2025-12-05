@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from src.api.dependencies import Session, get_current_user, get_db
 from src.models import User
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/invites", tags=["📩 Invites"])
 )
 async def create_invite(
     board_id: UUID,
-    max_uses: int | None,
+    max_uses: int | None = Query(None, description="Set max uses of the invite"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):

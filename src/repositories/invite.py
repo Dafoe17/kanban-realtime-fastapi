@@ -21,6 +21,23 @@ class InviteRepository:
         return invite
 
     @staticmethod
+    def check_invite_exists(db: Session, board_id: UUID) -> Invite | None:
+        invite = (
+            db.query(Invite)
+            .filter_by(board_id=board_id)
+            .order_by(Invite.expires_at.desc())
+            .first()
+        )
+        if (
+            not invite
+            or (invite.expires_at and invite.expires_at < datetime.now(timezone.utc))
+            or invite.max_uses == 0
+        ):
+            return None
+
+        return invite
+
+    @staticmethod
     def create_invite(
         db: Session, board_id: UUID, user_id: UUID, max_uses: int
     ) -> Invite:

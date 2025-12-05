@@ -20,6 +20,11 @@ class InviteService:
 
         check_board_permission(db, current_user, board.id, Permission.BOARD_INVITE_LINK)
 
+        if InviteRepository.check_invite_exists(db, board_id):
+            raise HTTPException(
+                status_code=409, detail="Invite to the board already exists"
+            )
+
         if not max_uses:
             max_uses = 1
 
