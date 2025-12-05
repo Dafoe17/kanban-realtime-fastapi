@@ -80,7 +80,7 @@ async def patch_user_board_state(
 @router.patch(
     "/patch/{pref_id}/move",
     response_model=UserBoardPreferencesRead,
-    operation_id="patch-user-board-pref-states",
+    operation_id="move-user-board-pref",
 )
 async def move_user_board_pref(
     pref_id: UUID,
