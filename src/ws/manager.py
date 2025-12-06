@@ -45,19 +45,26 @@ class WSConnectionManager:
         finally:
             db.close()
 
-        connection_id = str(uuid4())
+        connection_id = str(uuid4)
         self.local_connections[connection_id] = websocket
 
         await WSConnectionStorage.add_connection(
             str(user.id), str(board_id), connection_id
         )
+        await WSConnectionStorage.refresh_online(str(user.id), str(board_id))
         asyncio.create_task(self.start_board_listening(board_id))
         await websocket.send_text(f"Connected as {user.username}: {user.email}")
 
         try:
             while True:
-                msg = await websocket.receive_text()
-                await websocket.send_text(f"ECHO: {msg}")
+                msg = await websocket.receive_json()
+                msg_type = msg.get("type")
+                if msg_type == "ping":
+                    await WSConnectionStorage.refresh_online(
+                        str(user.id), str(board_id)
+                    )
+                    continue
+
         except WebSocketDisconnect:
             await self.disconnect(user.id, board_id, connection_id)
 

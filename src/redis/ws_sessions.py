@@ -6,6 +6,19 @@ from .client import RedisTools
 class WSConnectionStorage:
 
     @classmethod
+    async def refresh_online(cls, user_id: str, board_id: str):
+        redis = await RedisTools.ensure_initialized()
+        assert redis is not None
+        await redis.sadd(f"online:board:{board_id}", user_id)
+        await redis.expire(f"online:board:{board_id}", 60)
+
+    @classmethod
+    async def get_online(cls, board_id: str):
+        redis = await RedisTools.ensure_initialized()
+        assert redis is not None
+        return await redis.smembers(f"online:board:{board_id}")
+
+    @classmethod
     async def add_connection(cls, user_id: str, board_id: str, connection_id: str):
         redis = await RedisTools.ensure_initialized()
         assert redis is not None
@@ -18,6 +31,7 @@ class WSConnectionStorage:
         assert redis is not None
         await redis.srem(f"ws:user:{user_id}", connection_id)
         await redis.srem(f"ws:board:{board_id}", connection_id)
+        await redis.srem(f"online:board{board_id}", user_id)
 
     @classmethod
     async def remove_from_board(cls, board_id: str, connection_id: str):

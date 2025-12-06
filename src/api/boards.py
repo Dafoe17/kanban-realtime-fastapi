@@ -11,6 +11,7 @@ from src.schemas import (
     BoardsListResponse,
     BoardUpdate,
     UserBoardPreferencesRead,
+    UsersListResponse,
 )
 from src.services import BoardsService
 from src.ws import manager
@@ -36,6 +37,21 @@ async def get_board(
     current_user: User = Depends(get_current_user),
 ):
     return BoardsService.get_board(db=db, board_id=board_id, current_user=current_user)
+
+
+@router.get(
+    "/get/{board_id}/users-online",
+    response_model=UsersListResponse,
+    operation_id="get-board-users-online",
+)
+async def get_online_users(
+    board_id: UUID,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    return await BoardsService.get_online_users(
+        db=db, board_id=board_id, current_user=current_user
+    )
 
 
 @router.post("/create", response_model=BoardRead, operation_id="create-board")

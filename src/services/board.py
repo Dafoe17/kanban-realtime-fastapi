@@ -3,7 +3,8 @@ from uuid import UUID
 from fastapi import HTTPException
 
 from src.permissions import Permission, Role, check_board_permission
-from src.repositories import BoardsRepository
+from src.redis import WSConnectionStorage
+from src.repositories import BoardsRepository, UsersRepository
 from src.schemas import (
     BoardCreate,
     BoardRead,
@@ -11,6 +12,8 @@ from src.schemas import (
     BoardUpdate,
     UserBoardPreferencesCreate,
     UserBoardPreferencesRead,
+    UserRead,
+    UsersListResponse,
 )
 
 
@@ -38,6 +41,26 @@ class BoardsService:
             boards=[BoardRead.model_validate(board) for board in boards],
         )
 
+        return response
+
+    @staticmethod
+    async def get_online_users(db, board_id: UUID, current_user) -> UsersListResponse:
+        check_board_permission(db, current_user, board_id, Permission.BOARD_VIEW)
+        board = BoardsRepository.get_board(db, board_id)
+        if not board:
+            raise HTTPException(status_code=404, detail="Board not found")
+
+        users = await WSConnectionStorage.get_online(str(board_id))
+        total = len(users)
+        response = UsersListResponse(
+            total=total,
+            skip=None,
+            limit=None,
+            users=[
+                UserRead.model_validate(UsersRepository.get_by_id(db, UUID(user)))
+                for user in users
+            ],
+        )
         return response
 
     @staticmethod
