@@ -58,4 +58,4 @@ async def delete_user(
     db: Session = Depends(get_db), current_user: User = Depends(get_current_user)
 ):
 
-    return UsersService.delete_user(db=db, current_user=current_user)
+    return await UsersService.delete_user(db=db, current_user=current_user)

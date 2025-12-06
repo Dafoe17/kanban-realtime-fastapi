@@ -15,8 +15,8 @@ async def token_json(
     form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
 
-    user = AuthService.login(db, form_data.username, form_data.password)
-    access_token, _ = AuthService.create_tokens(user.id)
+    user = await AuthService.login(db, form_data.username, form_data.password)
+    access_token, _ = await AuthService.create_tokens(user.id)
     return {"access_token": access_token, "token_type": "bearer"}
 
 
@@ -26,8 +26,8 @@ async def login(
     email: str, password: str, response: Response, db: Session = Depends(get_db)
 ):
 
-    user = AuthService.login(db, email, password)
-    access_token, refresh_token = AuthService.create_tokens(user.id)
+    user = await AuthService.login(db, email, password)
+    access_token, refresh_token = await AuthService.create_tokens(user.id)
 
     response.set_cookie(
         key="refresh_token",
@@ -49,12 +49,12 @@ async def login(
         path="/",
     )
 
-    return {"message": "logged"}
+    return {"message": "logged_in"}
 
 
 @router.post("/sign-up")
 async def sign_up(data: UserCreate, db: Session = Depends(get_db)):
-    AuthService.sign_up(db, data)
+    await AuthService.sign_up(db, data)
     return {"message": "signed_up"}
 
 
@@ -64,7 +64,7 @@ async def refresh(
     refresh_token: str = Cookie(None),
 ):
 
-    new_access = AuthService.refresh(refresh_token)
+    new_access = await AuthService.refresh(refresh_token)
 
     response.set_cookie(
         key="access_token",
@@ -80,7 +80,8 @@ async def refresh(
 
 
 @router.patch("/logout")
-async def logout(response: Response):
+async def logout(response: Response, access_token: str = Cookie(None)):
+    await AuthService.logout(access_token)
     response.delete_cookie("access_token", path="/")
     response.delete_cookie("refresh_token", path="/")
-    return {"message": "logged out"}
+    return {"message": "logged_out"}

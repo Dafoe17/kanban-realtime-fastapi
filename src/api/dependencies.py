@@ -1,4 +1,4 @@
-from fastapi import Depends, HTTPException
+from fastapi import Cookie, Depends, Header, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
 from src.core.security import JWTValidationError, verify_access_token
@@ -32,8 +32,21 @@ def get_user_from_token(token: str | None, db: Session) -> User:
 
 
 def get_current_user(
-    token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)
+    access_token: str | None = Cookie(default=None),
+    authorization: str | None = Header(default=None),
+    db: Session = Depends(get_db),
 ) -> User:
+
+    token = access_token
+
+    if not token and authorization:
+        scheme, _, token_str = authorization.partition(" ")
+        if scheme.lower() != "bearer" or not token_str:
+            raise HTTPException(status_code=401, detail="Invalid authorization header")
+        token = token_str
+
+    if not token:
+        raise HTTPException(status_code=401, detail="Missing token")
 
     try:
         return get_user_from_token(token, db)

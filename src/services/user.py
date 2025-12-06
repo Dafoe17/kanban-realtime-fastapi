@@ -2,6 +2,7 @@ from uuid import UUID
 
 from fastapi import HTTPException
 
+from src.redis import TokenStorage
 from src.repositories import UsersRepository
 from src.schemas import UserRead, UsersListResponse
 
@@ -68,9 +69,10 @@ class UsersService:
             raise HTTPException(500, f"Failed to patch user: {str(e)}")
 
     @staticmethod
-    def delete_user(db, current_user) -> UserRead:
+    async def delete_user(db, current_user) -> UserRead:
         try:
             user = UsersRepository.delete_user(db, current_user)
+            await TokenStorage.delete_token(current_user.id)
             return UserRead.model_validate(user)
         except Exception as e:
             UsersRepository.rollback(db)
