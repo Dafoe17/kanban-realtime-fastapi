@@ -1,7 +1,7 @@
 # Kanban Realtime Board
 
 ## Overview
-**A real-time collaborative Kanban board** application built with FastAPI that enables multiple users to simultaneously view and modify boards, columns, and cards with immediate synchronization across all connected clients. pyproject.toml:1-6
+**A real-time collaborative Kanban board** application built with FastAPI that enables multiple users to simultaneously view and modify boards, columns, and cards with immediate synchronization across all connected clients.
 Features
 
 ## 🚀 Features  
