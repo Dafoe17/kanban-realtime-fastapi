@@ -1,6 +1,9 @@
 from .board import BoardsRepository
 from .board_preference import UserBoardPrefRepository
-from .card import CardsRepository
+from .card.card import CardsRepository
+from .card.checklist import ChecklistRepository
+from .card.comment import CommentsRepository
+from .card.tag import TagsRepository
 from .column import ColumnsRepository
 from .invite import InviteRepository
 from .user import UsersRepository
@@ -10,6 +13,9 @@ __all__ = [
     "BoardsRepository",
     "UserBoardPrefRepository",
     "ColumnsRepository",
+    "ChecklistRepository",
+    "TagsRepository",
     "CardsRepository",
     "InviteRepository",
+    "CommentsRepository",
 ]

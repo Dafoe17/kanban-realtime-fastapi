@@ -3,8 +3,11 @@ from fastapi import APIRouter
 from src.api.auth import router as auth_router
 from src.api.boards import router as boards_router
 from src.api.cards import router as cards_router
+from src.api.checklist import router as checklist_router
 from src.api.columns import router as columns_router
+from src.api.comments import router as comments_router
 from src.api.invites import router as invites_router
+from src.api.tags import router as tag_router
 from src.api.user_board_preferences import router as user_board_prefs_router
 from src.api.users import router as users_router
 from src.database import Base, engine
@@ -18,6 +21,9 @@ main_router.include_router(boards_router)
 main_router.include_router(user_board_prefs_router)
 main_router.include_router(columns_router)
 main_router.include_router(cards_router)
+main_router.include_router(comments_router)
+main_router.include_router(checklist_router)
+main_router.include_router(tag_router)
 main_router.include_router(invites_router)
 main_router.include_router(ws_router)
 
