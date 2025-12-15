@@ -112,16 +112,23 @@ class CardsService:
 
         check_board_permission(db, current_user, board.id, Permission.BOARD_WRITE)
 
-        card_dict = data.model_dump()
+        old_position = card.position
+        new_position = data.position
+
+        if old_position == new_position:
+            return CardMovedPayload.model_validate(column)
+
         try:
-            db_card = CardsRepository.patch_card(db, card, card_dict)
+            db_card = CardsRepository.move_card(
+                db, column.id, card, new_position, old_position
+            )
             payload = CardMovedPayload.model_validate(
                 {**db_card.__dict__, "board_id": board.id}
             )
             return payload
         except Exception as e:
             CardsRepository.rollback(db)
-            raise HTTPException(500, f"Failed to patch card: {str(e)}")
+            raise HTTPException(500, f"Failed to move card: {str(e)}")
 
     @staticmethod
     def create_card(

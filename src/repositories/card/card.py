@@ -65,6 +65,27 @@ class CardsRepository:
         return card
 
     @staticmethod
+    def move_card(
+        db: Session, column_id: UUID, card: Card, new_p: int, old_p: int
+    ) -> Card | None:
+        if new_p > old_p:
+            db.query(Card).filter(
+                Card.column_id == column_id,
+                Card.position > old_p,
+                Card.position <= new_p,
+            ).update({Card.position: Card.position - 1}, synchronize_session=False)
+        else:
+            db.query(Card).filter(
+                Card.column_id == column_id,
+                Card.position < old_p,
+                Card.position >= new_p,
+            ).update({Card.position: Card.position + 1}, synchronize_session=False)
+        card.position = new_p
+        db.commit()
+        db.refresh(card)
+        return card
+
+    @staticmethod
     def rollback(db: Session) -> None:
         db.rollback()
         return None
