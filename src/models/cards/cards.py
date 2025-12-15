@@ -7,7 +7,9 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from src.database import Base
-from src.models import Attachment, Checklist, Comment, Tag
+
+from .checklists import Checklist
+from .comments import Comment
 
 
 class Card(Base):
@@ -16,7 +18,7 @@ class Card(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
-        default=uuid.uuid4(),
+        default=uuid.uuid4,
         nullable=False,
         index=True,
     )
@@ -35,14 +37,10 @@ class Card(Base):
     title: Mapped[str] = mapped_column(String, nullable=False, index=True)
     description: Mapped[str] = mapped_column(String, nullable=True)
     position: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
-    attachment: Mapped[list[Attachment]] = relationship(
-        "Attachment", cascade="all, delete"
-    )
     checklist: Mapped[list[Checklist]] = relationship(
         "Checklist", cascade="all, delete"
     )
     comment: Mapped[list[Comment]] = relationship("Comment", cascade="all, delete")
-    tag: Mapped[list[Tag]] = relationship("Tag", cascade="all, delete")
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
@@ -51,5 +49,11 @@ class Card(Base):
     )
 
     __table_args__ = (
-        UniqueConstraint("column_id", "position", name="uq_card_position"),
+        UniqueConstraint(
+            "column_id",
+            "position",
+            name="uq_card_position",
+            deferrable=True,
+            initially="DEFERRED",
+        ),
     )
