@@ -4,7 +4,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.schemas.cards import ChecklistItemRead
+from .checklist_items import ChecklistItemRead
 
 
 class ChecklistBase(BaseModel):
@@ -13,11 +13,11 @@ class ChecklistBase(BaseModel):
 
 class ChecklistRead(ChecklistBase):
     id: UUID
+    card_id: UUID
     author_id: UUID
-    progress: float
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
-    items = List[ChecklistItemRead] = Field(default_factory=list)
+    items: List[ChecklistItemRead] = Field(default_factory=list)
     model_config = ConfigDict(from_attributes=True)
 
 

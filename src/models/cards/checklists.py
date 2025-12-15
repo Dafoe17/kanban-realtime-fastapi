@@ -1,13 +1,15 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, ForeignKey, Float, String
+from sqlalchemy import DateTime, ForeignKey, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from src.database import Base
-from src.models import ChecklistItem
+
+from .checklist_items import ChecklistItem
+
 
 class Checklist(Base):
     __tablename__ = "checklists"
@@ -15,7 +17,13 @@ class Checklist(Base):
     id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         primary_key=True,
-        default=uuid.uuid4(),
+        default=uuid.uuid4,
+        nullable=False,
+        index=True,
+    )
+    card_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("cards.id", ondelete="CASCADE"),
         nullable=False,
         index=True,
     )
@@ -25,15 +33,10 @@ class Checklist(Base):
         nullable=True,
         index=True,
     )
-    card_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey("cards.id", ondelete="CASCADE"),
-        nullable=False,
-        index=True,
-    )
     title: Mapped[str] = mapped_column(String, nullable=False, index=True)
-    items: Mapped[list[ChecklistItem]] = relationship("ChecklistItem", cascade="all, delete")
-    progress: Mapped[float] = mapped_column(Float, nullable=True, index=True)
+    items: Mapped[list[ChecklistItem]] = relationship(
+        "ChecklistItem", cascade="all, delete"
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
