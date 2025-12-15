@@ -58,7 +58,7 @@ async def get_invite_info(
 
 @router.delete(
     "/delete/{invite_id}",
-    response_model=UserBoardPreferencesRead,
+    response_model=InviteRead,
     operation_id="delete-invite",
 )
 async def delete_invite(
