@@ -5,12 +5,6 @@ from .boards import (
     BoardStatusResponse,
     BoardUpdate,
 )
-from .cards.attachments import (
-    AttachmentCreate,
-    AttachmentListResponse,
-    AttachmentRead,
-    AttachmentUpdate,
-)
 from .cards.card_tag_association import (
     CardTagAssociationCreate,
     CardTagAssociationRead,
@@ -46,7 +40,13 @@ from .cards.comments import (
     CommentStatusResponse,
     CommentUpdate,
 )
-from .cards.tags import TagCreate, TagRead, TagsListResponse, TagStatusResponse
+from .cards.tags import (
+    TagCreate,
+    TagRead,
+    TagsListResponse,
+    TagStatusResponse,
+    TagUpdate,
+)
 from .columns import (
     ColumnCreate,
     ColumnMove,
@@ -86,10 +86,6 @@ __all__ = [
     "InviteRead",
     "InviteCreate",
     "InviteStatusResponse",
-    "AttachmentCreate",
-    "AttachmentListResponse",
-    "AttachmentRead",
-    "AttachmentUpdate",
     "CardTagAssociationCreate",
     "CardTagAssociationRead",
     "CTAStatusResponse",
@@ -111,6 +107,7 @@ __all__ = [
     "CommentUpdate",
     "TagCreate",
     "TagRead",
+    "TagUpdate",
     "TagsListResponse",
     "TagStatusResponse",
     "ColumnRead",

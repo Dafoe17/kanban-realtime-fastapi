@@ -1,5 +1,4 @@
 from .boards import Board
-from .cards.attachments import Attachment
 from .cards.card_tag_association import CardTagAssociation
 from .cards.cards import Card
 from .cards.checklist_items import ChecklistItem
@@ -18,7 +17,6 @@ __all__ = [
     "UserBoardPreference",
     "Column",
     "Card",
-    "Attachment",
     "Checklist",
     "ChecklistItem",
     "Comment",
