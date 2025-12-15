@@ -142,9 +142,16 @@ class ColumnsService:
                 400, f"Failed to move, invalid position: {data.position}"
             )
 
-        column_dict = data.model_dump()
+        old_position = column.position
+        new_position = data.position
+
+        if old_position == new_position:
+            return ColumnMovedPayload.model_validate(column)
+
         try:
-            db_column = ColumnsRepository.patch_column(db, column, column_dict)
+            db_column = ColumnsRepository.move_column(
+                db, board.id, column, new_position, old_position
+            )
             payload = ColumnMovedPayload.model_validate(db_column)
             return payload
         except Exception as e:

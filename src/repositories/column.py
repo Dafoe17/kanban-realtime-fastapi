@@ -60,6 +60,27 @@ class ColumnsRepository:
         return column
 
     @staticmethod
+    def move_column(
+        db: Session, board_id: UUID, column: Column, new_p: int, old_p: int
+    ) -> Column | None:
+        if new_p > old_p:
+            db.query(Column).filter(
+                Column.board_id == board_id,
+                Column.position > old_p,
+                Column.position <= new_p,
+            ).update({Column.position: Column.position - 1}, synchronize_session=False)
+        else:
+            db.query(Column).filter(
+                Column.board_id == board_id,
+                Column.position < old_p,
+                Column.position >= new_p,
+            ).update({Column.position: Column.position + 1}, synchronize_session=False)
+        column.position = new_p
+        db.commit()
+        db.refresh(column)
+        return column
+
+    @staticmethod
     def rollback(db: Session) -> None:
         db.rollback()
         return None
