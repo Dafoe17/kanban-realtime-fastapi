@@ -11,17 +11,15 @@ class ChecklistItemBase(BaseModel):
 
 class ChecklistItemRead(ChecklistItemBase):
     id: UUID
-    author_id: UUID
     checklist_id: UUID
     status: bool = False
-    position: int = Field(default=0, ge=0)
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
 
 
 class ChecklistItemCreate(ChecklistItemBase):
-    pass
+    status: bool = False
 
 
 class ChecklistItemUpdate(ChecklistItemBase):
