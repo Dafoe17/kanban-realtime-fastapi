@@ -1,18 +1,26 @@
+from typing import List, Optional
 from uuid import UUID
-from typing import Optional, List
-from pydantic import BaseModel, Field
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CardTagAssociationBase(BaseModel):
     card_id: UUID
-    tag_id: UUID 
+    tag_id: UUID
 
 
 class CardTagAssociationRead(CardTagAssociationBase):
-    pass
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_encoders={
+            UUID: str,
+        },
+    )
+
 
 class CardTagAssociationCreate(CardTagAssociationBase):
     pass
+
 
 class CTAStatusResponse(BaseModel):
     status: str

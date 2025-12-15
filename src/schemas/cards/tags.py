@@ -1,7 +1,10 @@
-from typing import List, Optional
+from datetime import datetime
+from typing import Annotated, List, Optional
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
+
+ColorStr = Annotated[str, Field(pattern=r"^#[0-9A-Fa-f]{8}$")]  # #RRGGBBAA
 
 
 class TagBase(BaseModel):
@@ -10,13 +13,25 @@ class TagBase(BaseModel):
 
 class TagRead(TagBase):
     id: UUID
+    board_id: UUID
+    color: ColorStr = "#2424CCFF"
+    created_at: Optional[datetime] = None
+    updated_at: Optional[datetime] = None
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_encoders={
+            UUID: str,
+            datetime: lambda v: v.isoformat(),
+        },
+    )
 
 
 class TagCreate(TagBase):
-    pass
+    color: Optional[ColorStr] = "#2424CCFF"
 
 
 class TagUpdate(TagBase):
+    color: Optional[ColorStr] = None
     title: Optional[str] = None
 
 
