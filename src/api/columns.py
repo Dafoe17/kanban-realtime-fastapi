@@ -108,7 +108,9 @@ async def create_column(
     return ColumnsService.get_column(db, payload.id, current_user)
 
 
-@router.delete("/delete", response_model=ColumnRead, operation_id="delete-column")
+@router.delete(
+    "/delete/{column_id}", response_model=ColumnRead, operation_id="delete-column"
+)
 async def delete_column(
     column_id: UUID,
     db: Session = Depends(get_db),
