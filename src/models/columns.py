@@ -35,5 +35,11 @@ class Column(Base):
     )
 
     __table_args__ = (
-        UniqueConstraint("board_id", "position", name="uq_column_position"),
+        UniqueConstraint(
+            "board_id",
+            "position",
+            name="uq_column_position",
+            deferrable=True,
+            initially="DEFERRED",
+        ),
     )
