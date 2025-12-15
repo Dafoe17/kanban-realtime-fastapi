@@ -6,20 +6,12 @@ from src.database import Base
 
 
 class CardTagAssociation(Base):
-    __tablename__ = "card_tag_association"
+    __tablename__ = "card_tag_associations"
 
     card_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey("cards.id"),
-        nullable=False,
-        index=True)
-    
-    tag_id: Mapped[UUID] = mapped_column(
-        UUID(as_uuid=True),
-        ForeignKey("tags.id"),
-        nullable=False,
-        index=True)
-    
-    __table_args__ = (
-        UniqueConstraint("tag_id", "card_id", name="uq_tags_for_card"),
+        UUID(as_uuid=True), ForeignKey("cards.id", ondelete="CASCADE"), primary_key=True
     )
+    tag_id: Mapped[UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("tags.id", ondelete="CASCADE"), primary_key=True
+    )
+    __table_args__ = (UniqueConstraint("tag_id", "card_id", name="uq_tags_for_card"),)
