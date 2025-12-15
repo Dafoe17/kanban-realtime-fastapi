@@ -4,7 +4,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.schemas import AttachmentRead, ChecklistRead, CommentRead, TagRead
+from .checklist import ChecklistRead
+from .comments import CommentRead
 
 
 class CardBase(BaseModel):
@@ -17,10 +18,8 @@ class CardRead(CardBase):
     column_id: UUID
     position: int = Field(default=0, ge=0)
     assigned_to: Optional[UUID] = Field(default=None)
-    attachment: List[AttachmentRead] = []
     checklist: List[ChecklistRead] = []
     comment: List[CommentRead] = []
-    tag: List[TagRead] = []
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     model_config = ConfigDict(
