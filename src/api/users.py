@@ -32,10 +32,9 @@ async def get_users(
     current_user: User = Depends(get_current_user),
     skip: int | None = Query(None, description="Pagination | skip"),
     limit: int | None = Query(None, description="Pagination | limit"),
-    # active: bool | None = Query(False, description="Filter active users"),
     search: str | None = Query(None, description="Search by username, email"),
     sort_by: str = Query("username", description="Sort by field: username, email"),
-    order: SortOrder = Query("asc", description="Sort order: asc or desc"),
+    order: SortOrder = Query(SortOrder.asc, description="Sort order: asc or desc"),
 ):
 
     return UsersService.get_users(
