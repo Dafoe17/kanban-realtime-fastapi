@@ -11,8 +11,8 @@ class CommentBase(BaseModel):
 
 class CommentRead(CommentBase):
     id: UUID
+    card_id: UUID
     author_id: UUID
-    position: int = Field(default=0, ge=0)
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
     model_config = ConfigDict(from_attributes=True)
